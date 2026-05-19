@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .btn { background: #4F46E5; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #4338CA; }
+    </style>
+</head>
+<body>
+    <h2>Logout</h2>
+    <p>Click the button below to logout and return to the registration page:</p>
+    
+    <form action="http://localhost:9000/logout" method="POST" style="display: inline;">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn">Logout Now</button>
+    </form>
+    
+    <p style="margin-top: 30px;">
+        <small>After logging out, you can visit <a href="http://localhost:9000/register">http://localhost:9000/register</a> to create a new account.</small>
+    </p>
+</body>
+</html>
