@@ -86,13 +86,6 @@
 
 @section('content')
 
-<div class="back-to-step1-wrapper" style="margin-bottom: 2rem; display: flex; justify-content: flex-start; width: 100%;">
-    <a href="{{ route('orders.step1') }}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--border); border-radius: 12px; font-weight: 700; color: var(--text-main); text-decoration: none; box-shadow: var(--shadow); transition: all 0.2s;">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width: 2.5;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        Back to Packages
-    </a>
-</div>
-
 <div class="stepper">
     <div class="step completed">
         <div class="step-icon">
