@@ -4,15 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - Afronexhost</title>
-    <script>
-        // Silence Tailwind CDN production warning
-        const originalWarn = console.warn;
-        console.warn = (...args) => {
-            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
-            originalWarn.apply(console, args);
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -95,44 +87,62 @@
                 <nav class="desktop-menu hidden md:flex items-center space-x-8">
                     <div class="relative group">
                         <button class="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium">
-                            <span>Web Hosting</span>
+                            <span data-i18n="web-hosting">Web Hosting</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <a href="{{ route('packages.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Shared Hosting</a>
-                            <!-- <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Free Hosting</a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">VPS Hosting</a> -->
+                            <a href="{{ route('packages.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600" data-i18n="shared-hosting">Shared Hosting</a>
                         </div>
                     </div>
                     
                     <div class="relative group">
                         <button class="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium">
-                            <span>How To</span>
+                            <span data-i18n="how-to">How To</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <a href="{{ route('howto.buy') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Buy Domain & Hosting</a>
-                            <a href="{{ route('howto.hosting') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Buy Hosting Only</a>
-                            <a href="{{ route('howto.transfer') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Transfer to Afronex</a>
+                            <a href="{{ route('howto.buy') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600" data-i18n="buy-domain-hosting">Buy Domain & Hosting</a>
+                            <a href="{{ route('howto.hosting') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600" data-i18n="buy-hosting-only">Buy Hosting Only</a>
+                            <a href="{{ route('howto.transfer') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600" data-i18n="transfer-to-afronex">Transfer to Afronex</a>
                         </div>
                     </div>
 
-                    <a href="{{ route('contact') }}" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+                    <a href="{{ route('contact') }}" class="text-gray-700 hover:text-blue-600 font-medium" data-i18n="contact">Contact</a>
+                    
+                    <!-- Multilingual Switcher Dropdown -->
+                    <div class="relative inline-block text-left" id="lang-switcher">
+                        <button type="button" onclick="toggleLangDropdown(event)" class="inline-flex justify-center items-center gap-2 rounded-xl bg-gray-50 border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 transition-colors" id="menu-button" aria-expanded="false" aria-haspopup="true">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            <span id="current-lang-name">English</span>
+                            <svg class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 z-50 mt-2 w-44 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 focus:outline-none transition-all duration-200 hidden" id="lang-dropdown" role="menu">
+                            <div class="py-1.5 p-1" role="none">
+                                <a href="javascript:void(0)" onclick="setLanguage('en')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇬🇧 English</a>
+                                <a href="javascript:void(0)" onclick="setLanguage('am')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 አማርኛ (Amharic)</a>
+                                <a href="javascript:void(0)" onclick="setLanguage('om')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 Oromoo (Oromo)</a>
+                                <a href="javascript:void(0)" onclick="setLanguage('so')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇸🇴 Soomaali (Somali)</a>
+                            </div>
+                        </div>
+                    </div>
+
                     @auth
-                        <a href="{{ route('customer.dashboard') }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 mr-4">
+                        <a href="{{ route('customer.dashboard') }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 mr-4" data-i18n="dashboard">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0v7a4 4 0 018 0h2a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"></path></svg>
                             Dashboard
                         </a>
                         <form action="{{ route('logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="text-gray-700 hover:text-red-600 font-medium bg-transparent border-none cursor-pointer">Logout</button>
+                            <button type="submit" class="text-gray-700 hover:text-red-600 font-medium bg-transparent border-none cursor-pointer" data-i18n="logout">Logout</button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium" data-i18n="login">Login</a>
                     @endauth
                 </nav>
 
@@ -283,6 +293,321 @@
             if (!menu.contains(event.target) && !button) {
                 menu.classList.add('hidden');
             }
+        });
+
+        // Multilingual Translation System (English, Amharic, Oromo, Somali)
+        const translations = {
+            en: {
+                "contact": "Contact",
+                "login": "Login",
+                "logout": "Logout",
+                "dashboard": "Dashboard",
+                "web-hosting": "Web Hosting",
+                "shared-hosting": "Shared Hosting",
+                "how-to": "How To",
+                "buy-domain-hosting": "Buy Domain & Hosting",
+                "buy-hosting-only": "Buy Hosting Only",
+                "transfer-to-afronex": "Transfer to Afronex",
+                "marquee-text": "AFRONEX HOSTING CLONE",
+                "choose-package": "Choose Your Package",
+                "choose-package-sub": "Select the perfect hosting or domain package tailored to your needs. Our solutions are designed to help you succeed online.",
+                "hosting-packages": "Hosting Packages",
+                "starter-hosting": "Starter Hosting",
+                "popular": "Popular",
+                "month": "/month",
+                "starter-nvme": "5 GB NVMe Storage",
+                "starter-bandwidth": "50 GB Bandwidth",
+                "starter-emails": "5 Email Accounts",
+                "starter-domains": "1 Free Domain",
+                "select-starter": "Select Starter",
+                "recommended": "Recommended",
+                "best-value": "Best Value",
+                "professional-hosting": "Professional Hosting",
+                "pro-nvme": "15 GB NVMe Storage",
+                "pro-bandwidth": "150 GB Bandwidth",
+                "pro-emails": "15 Email Accounts",
+                "pro-domains": "2 Free Domains",
+                "pro-ssl": "SSL Certificate",
+                "select-pro": "Select Professional",
+                "advanced": "Advanced",
+                "business-hosting": "Business Hosting",
+                "biz-nvme": "50 GB NVMe Storage",
+                "biz-bandwidth": "Unlimited Bandwidth",
+                "biz-emails": "Unlimited Email Accounts",
+                "biz-domains": "5 Free Domains",
+                "biz-support": "Priority Support",
+                "select-biz": "Select Business",
+                "why-choose": "Why Choose Afronex Host?",
+                "why-choose-sub": "We provide reliable hosting solutions with unmatched features and support",
+                "lightning-fast": "Lightning Fast",
+                "lightning-fast-desc": "NVMe storage with 3x faster speeds than traditional SSD",
+                "secure-reliable": "Secure & Reliable",
+                "secure-reliable-desc": "SSL certificates and secure payment processing",
+                "support-247": "24/7 Support",
+                "support-247-desc": "Round-the-clock customer support via Telegram and email",
+                "hero-badge": "🚀 NEW: NVMe SSD HOSTING",
+                "hero-title-main": "Hosting for Ethiopia's ",
+                "hero-title-sub": "Brilliant Businesses",
+                "hero-desc": "Join thousands of businesses on Ethiopia's fastest, most reliable, and secure web hosting platform.",
+                "view-plans": "View Hosting Plans",
+                "how-to-buy": "How to Buy",
+                "unmatched-value": "Unmatched Value",
+                "premium-title": "Premium Hosting, Zero Compromises",
+                "cpanel-access": "Full cPanel Control",
+                "cpanel-desc": "Manage your databases, files, and domains easily with full cPanel dashboard access.",
+                "uptime-guarantee": "99.9% Uptime Guarantee",
+                "uptime-desc": "Enterprise-grade server reliability keeps your website online and responsive 24/7.",
+                "round-clock": "Round-the-Clock Monitoring",
+                "round-clock-desc": "Proactive security scans and backups guard your business against threats."
+            },
+            am: {
+                "contact": "ያግኙን",
+                "login": "ግባ",
+                "logout": "ውጣ",
+                "dashboard": "ዳሽቦርድ",
+                "web-hosting": "ዌብ ሆስቲንግ",
+                "shared-hosting": "የጋራ ሆስቲንግ",
+                "how-to": "እንዴት እንደሚሰራ",
+                "buy-domain-hosting": "ዶሜን እና ሆስቲንግ መግዛት",
+                "buy-hosting-only": "ሆስቲንግ ብቻ መግዛት",
+                "transfer-to-afronex": "ወደ አፍሮኔክስ ማዛወር",
+                "marquee-text": "አፍሮኔክስ የዌብ ሆስቲንግ እና የዶሜን አቅራቢ",
+                "choose-package": "የሆስቲንግ ፓኬጅዎን ይምረጡ",
+                "choose-package-sub": "ለእርስዎ ፍላጎት ተስማሚ የሆነውን የዌብ ሆስቲንግ ወይም የዶሜን ፓኬጅ ይምረጡ። የእኛ መፍትሄዎች በመስመር ላይ ስኬታማ እንዲሆኑ የተነደፉ ናቸው።",
+                "hosting-packages": "የሆስቲንግ ፓኬጆች",
+                "starter-hosting": "ጀማሪ ሆስቲንግ (Starter)",
+                "popular": "ተመራጭ",
+                "month": "/በወር",
+                "starter-nvme": "5 ጂቢ የኤንቪኤምኢ ስቶሬጅ",
+                "starter-bandwidth": "50 ጂቢ የባንድዊድዝ መጠን",
+                "starter-emails": "5 የኢሜይል አካውንቶች",
+                "starter-domains": "1 ነፃ ዶሜን",
+                "select-starter": "ጀማሪን ይምረጡ",
+                "recommended": "ተመራጭ",
+                "best-value": "ምርጥ ዋጋ",
+                "professional-hosting": "ባለሙያ ሆስቲንግ (Professional)",
+                "pro-nvme": "15 ጂቢ የኤንቪኤምኢ ስቶሬጅ",
+                "pro-bandwidth": "150 ጂቢ የባንድዊድዝ መጠን",
+                "pro-emails": "15 የኢሜይል አካውንቶች",
+                "pro-domains": "2 ነፃ ዶሜኖች",
+                "pro-ssl": "የኤስኤስኤል ሰርተፊኬት",
+                "select-pro": "ባለሙያን ይምረጡ",
+                "advanced": "የላቀ",
+                "business-hosting": "የንግድ ሆስቲንግ (Business)",
+                "biz-nvme": "50 ጂቢ የኤንቪኤምኢ ስቶሬጅ",
+                "biz-bandwidth": "ያልተገደበ የባንድዊድዝ መጠን",
+                "biz-emails": "ያልተገደበ የኢሜይል አካውንቶች",
+                "biz-domains": "5 ነፃ ዶሜኖች",
+                "biz-support": "ቅድሚያ የሚሰጠው ድጋፍ",
+                "select-biz": "የንግድን ይምረጡ",
+                "why-choose": "ለምን አፍሮኔክስን ይመርጣሉ?",
+                "why-choose-sub": "ተወዳዳሪ የሌላቸው ባህሪያት እና አስተማማኝ የሆስቲንግ አገልግሎቶችን ከሙሉ ድጋፍ ጋር እናቀርባለን",
+                "lightning-fast": "እጅግ በጣም ፈጣን",
+                "lightning-fast-desc": "ከባህላዊ ኤስኤስዲ 3 እጥፍ ፈጣን ፍጥነት ያለው የኤንቪኤምኢ ስቶሬጅ",
+                "secure-reliable": "ደህንነቱ የተጠበቀ እና አስተማማኝ",
+                "secure-reliable-desc": "የኤስኤስኤል ሰርተፊኬቶች እና ደህንነቱ የተጠበቀ ክፍያ",
+                "support-247": "የ24/7 የደንበኛ ድጋፍ",
+                "support-247-desc": "በቴሌግራም እና በኢሜይል አማካኝነት የ24 ሰዓት ቀጣይነት ያለው ድጋፍ",
+                "hero-badge": "🚀 አዲስ፦ NVMe SSD ሆስቲንግ",
+                "hero-title-main": "ለኢትዮጵያ አስደናቂ ",
+                "hero-title-sub": "ንግዶች የተዘጋጀ ሆስቲንግ",
+                "hero-desc": "በኢትዮጵያ ፈጣን፣ እጅግ አስተማማኝ እና ደህንነቱ የተጠበቀ የዌብ ሆስቲንግ ፕላትፎርም ላይ በሺዎች የሚቆጠሩ ንግዶችን ይቀላቀሉ።",
+                "view-plans": "የሆስቲንግ ፓኬጆችን ይመልከቱ",
+                "how-to-buy": "እንዴት እንደሚገዛ",
+                "unmatched-value": "ተወዳዳሪ የሌለው ዋጋ",
+                "premium-title": "ፕሪሚየም ሆስቲንግ፣ ያለምንም ስምምነት",
+                "cpanel-access": "ሙሉ የሲፓነል (cPanel) ቁጥጥር",
+                "cpanel-desc": "በቀላሉ ሙሉ የሲፓነል ዳሽቦርድ መዳረሻን በመጠቀም የውሂብ ጎታዎችን፣ ፋይሎችን እና ዶሜኖችን ያስተዳድሩ።",
+                "uptime-guarantee": "የ99.9% ቀጣይነት ዋስትና",
+                "uptime-desc": "በከፍተኛ ደረጃ የተገነቡ ሰርቨሮቻችን ዌብሳይትዎ በቀን 24 ሰዓት በመስመር ላይ ንቁ እንዲሆን ያደርጋሉ።",
+                "round-clock": "የ24 ሰዓት ቁጥጥር እና ክትትል",
+                "round-clock-desc": "ንግድዎን ከስጋቶች ለመጠበቅ ንቁ የደህንነት ቅኝቶችን እና ምትኬዎችን (Backups) እናዘጋጃለን።"
+            },
+            om: {
+                "contact": "Quunnamaa",
+                "login": "Seeni",
+                "logout": "Ba'i",
+                "dashboard": "Daashboordii",
+                "web-hosting": "Weeb Hosting",
+                "shared-hosting": "Hosting Waliinii",
+                "how-to": "Akkaataa Hojii",
+                "buy-domain-hosting": "Domeenii fi Hosting Bitachuu",
+                "buy-hosting-only": "Hosting Qofa Bitachuu",
+                "transfer-to-afronex": "Gara Afronextti Dabarsuu",
+                "marquee-text": "AFRONEX HOSTING PAATEE DOMEENII FI HOOSTINGII",
+                "choose-package": "Paakeejii Keessan Filadhaa",
+                "choose-package-sub": "Paakeejii hoostingii ykn domeenii fedhii keessaniif ta'u filadhaa. Deebiin keenya toora interneetii irratti akka milkooftaniif kan qophaa'eedha.",
+                "hosting-packages": "Paakeejiiwwan Hosting",
+                "starter-hosting": "Hosting Jalqabaa (Starter)",
+                "popular": "Jaallatamaa",
+                "month": "/ji'aan",
+                "starter-nvme": "Kuusaa NVMe 5 GB",
+                "starter-bandwidth": "Bandwidth 50 GB",
+                "starter-emails": "Imeeliiwwan 5",
+                "starter-domains": "Domeenii Bilisaa 1",
+                "select-starter": "Starter Filadhaa",
+                "recommended": "Gorfamaa",
+                "best-value": "Gatiin Gaarii",
+                "professional-hosting": "Hosting Ogeessaa (Professional)",
+                "pro-nvme": "Kuusaa NVMe 15 GB",
+                "pro-bandwidth": "Bandwidth 150 GB",
+                "pro-emails": "Imeeliiwwan 15",
+                "pro-domains": "Domeenii Bilisaa 2",
+                "pro-ssl": "Waraqaa SSL Bilisaa",
+                "select-pro": "Professional Filadhaa",
+                "advanced": "Dabalataa",
+                "business-hosting": "Hosting Daldalaa (Business)",
+                "biz-nvme": "Kuusaa NVMe 50 GB",
+                "biz-bandwidth": "Bandwidth Daangaa Hin Qabne",
+                "biz-emails": "Imeeliiwwan Daangaa Hin Qabne",
+                "biz-domains": "Domeenii Bilisaa 5",
+                "biz-support": "Gargaarsa Dursa Qabu",
+                "select-biz": "Business Filadhaa",
+                "why-choose": "Maaliif Afronex Host Filattu?",
+                "why-choose-sub": "Tajaajila hosting amansiisaa ta'e amaloota fi gargaarsa wal hin Gitneen isiniif ni dhiheessina",
+                "lightning-fast": "Saffisa Daangaa Hin Qabne",
+                "lightning-fast-desc": "Kuusaa NVMe saffisa kuusaa SSD caalaa dachaa 3 qabu",
+                "secure-reliable": "Nageesaa fi Amanamaa",
+                "secure-reliable-desc": "Sertifikeetii SSL fi sirna kaffaltii amansiisaa ta'e",
+                "support-247": "Gargaarsa 24/7",
+                "support-247-desc": "Tajaajila gargaarsaa sa'aatii 24 guutuu Telegram fi imeeliin kennamu",
+                "hero-badge": "🚀 HAARA: HOSTING SSD NVMe",
+                "hero-title-main": "Daldala Itoophiyaa ",
+                "hero-title-sub": "Bifaa fi Adda Ta'eef Hosting",
+                "hero-desc": "Kumaatamaan kan lakkaa'aman daldaltoota saffisa, amanamummaa fi tajaajila gaarii Afronexhost filatan wajjiin ta'aa.",
+                "view-plans": "Paakeejiiwwan Hosting Miriqi",
+                "how-to-buy": "Akkaataa Itti Bitamu",
+                "unmatched-value": "Gatiin Adda Ta'e",
+                "premium-title": "Martigelin Premium, Kompromiisii Malee",
+                "cpanel-access": "To'annoo cPanel Guutuu",
+                "cpanel-desc": "Kuusaa odeeffannoo, faayilota fi domeenii keessan salphaatti daashboordii cPanel fayyadamuun to'adhaa.",
+                "uptime-guarantee": "Wabii Hojii (Uptime) 99.9%",
+                "uptime-desc": "Sirni server keenya tajaajila addaan hin cinne sa'aatii 24 guutuu akka argattu taasisa.",
+                "round-clock": "Hordoffii Sa'aatii 24",
+                "round-clock-desc": "Tajaajilni keenya daldala keessan balaa irraa eeguuf yeroo hunda hordoffii nageenyaa ni taasisa."
+            },
+            so: {
+                "contact": "La Soo Xiriir",
+                "login": "Gal",
+                "logout": "Ka bax",
+                "dashboard": "Kontroolka",
+                "web-hosting": "Martigelinta",
+                "shared-hosting": "Martigelinta Wadaaga",
+                "how-to": "Sida ay u Shaqeyso",
+                "buy-domain-hosting": "Iibso Domain & Martigelin",
+                "buy-hosting-only": "Iibso Martigelin Kaliya",
+                "transfer-to-afronex": "U Wareeji Afronex",
+                "marquee-text": "ADEEGGA MARTIGELINTA IYO DOMAIN-KA AFRONEX",
+                "choose-package": "Dooro Xirmadaada Martigelinta",
+                "choose-package-sub": "Dooro xirmada ugu habboon ee martigelinta ama domainka ee ku habboon baahiyahaaga. Xalalkayagu waxay u qaabaysan yihiin inay kaa caawiyaan guusha online-ka.",
+                "hosting-packages": "Xirmooyinka Martigelinta",
+                "starter-hosting": "Martigelinta Bilowga (Starter)",
+                "popular": "Ugu Caansan",
+                "month": "/bishii",
+                "starter-nvme": "Kaydka 5 GB NVMe SSD",
+                "starter-bandwidth": "Bandwidth 50 GB ah",
+                "starter-emails": "5 Xisaabood oo Iimayl ah",
+                "starter-domains": "1 Domain oo Bilaash ah",
+                "select-starter": "Dooro Starter-ka",
+                "recommended": "Lagu Talinayo",
+                "best-value": "Qiimaha Ugu Fiican",
+                "professional-hosting": "Martigelinta Xirfadleyda (Professional)",
+                "pro-nvme": "Kaydka 15 GB NVMe SSD",
+                "pro-bandwidth": "Bandwidth 150 GB ah",
+                "pro-emails": "15 Xisaabood oo Iimayl ah",
+                "pro-domains": "2 Domain oo Bilaash ah",
+                "pro-ssl": "Shahaadada SSL Bilaash ah",
+                "select-pro": "Dooro Professional-ka",
+                "advanced": "Horumarsan",
+                "business-hosting": "Martigelinta Ganacsiga (Business)",
+                "biz-nvme": "Kaydka 50 GB NVMe SSD",
+                "biz-bandwidth": "Bandwidth aan Xadidnayn",
+                "biz-emails": "Iimaylo aan Xadidnayn",
+                "biz-domains": "5 Domain oo Bilaash ah",
+                "biz-support": "Taageerada Mudnaanta leh",
+                "select-biz": "Dooro Business-ka",
+                "why-choose": "Maxaad u Dooranaysaa Afronex?",
+                "why-choose-sub": "Waxaan bixinaa xalal martigelin oo la isku halleyn karo oo leh astaamo iyo taageero aan la qiyaasi karin",
+                "lightning-fast": "Aad u Degdeg Badan",
+                "lightning-fast-desc": "Kaydka NVMe oo 3x ka dheereeya SSD-yada caadiga ah",
+                "secure-reliable": "Aamin & La Isku Halleyn Karo",
+                "secure-reliable-desc": "Shahaadooyinka SSL iyo habka lacag bixinta aamin ah",
+                "support-247": "Taageero 24/7 ah",
+                "support-247-desc": "Taageerada macaamiisha oo saacad walba ah adoo adeegsanaya Telegram iyo iimayl",
+                "hero-badge": "🚀 CUSUB: MARTIGELINTA NVMe SSD",
+                "hero-title-main": "Martigelinta Ganacsiyada ",
+                "hero-title-sub": "Aadka u Fariidka ah ee Itoobiya",
+                "hero-desc": "Ku biir kumanaan ganacsiyo ah oo ku kalsoon madal martigelinta shabakadda ee ugu dhakhsaha badan uguna kalsoonida badan Itoobiya.",
+                "view-plans": "Fiiri Xirmooyinka Martigelinta",
+                "how-to-buy": "Sida Loo Iibsado",
+                "unmatched-value": "Qiimo Aan La Tartami Karin",
+                "premium-title": "Martigelinta Qiimaha Sare Leh, Tanaasul La'aan",
+                "cpanel-access": "Maamul buuxa oo cPanel ah",
+                "cpanel-desc": "U maamul xogtaada, faylashaada, iyo domain-kaaga si fudud adoo adeegsanaya helitaanka maamulka cPanel.",
+                "uptime-guarantee": "99.9% Damaanad Uptime ah",
+                "uptime-desc": "Kalsoonida server-keena heerka ganacsi wuxuu ilaalinayaa mareegahaaga mid online ah 24/7.",
+                "round-clock": "La Socodka Saacad Kasta ah",
+                "round-clock-desc": "Baaritaanno amni oo firfircoon iyo koobiyo badbaado ah si loo ilaaliyo ganacsigaaga."
+            }
+        };
+
+        function toggleLangDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('lang-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function setLanguage(lang) {
+            localStorage.setItem('preferred-lang', lang);
+            document.documentElement.lang = lang;
+            
+            // Close dropdown
+            const dropdown = document.getElementById('lang-dropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+            
+            // Update active label
+            const langNames = {
+                en: 'English',
+                am: 'አማርኛ',
+                om: 'Oromoo',
+                so: 'Soomaali'
+            };
+            const currentLangSpan = document.getElementById('current-lang-name');
+            if (currentLangSpan) currentLangSpan.innerText = langNames[lang] || 'English';
+            
+            // Translate all elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    // Check if it has text nodes
+                    let textNode = Array.from(element.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+                    if (textNode) {
+                        textNode.nodeValue = translations[lang][key];
+                    } else {
+                        element.innerText = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Update Marquee text
+            const marqueeElements = document.querySelectorAll('.gradient-bg .inline-block span');
+            marqueeElements.forEach(span => {
+                if (translations[lang] && translations[lang]['marquee-text']) {
+                    span.innerText = translations[lang]['marquee-text'];
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            const dropdown = document.getElementById('lang-dropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        });
+
+        // Initialize preferred language on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferred-lang') || 'en';
+            setLanguage(savedLang);
         });
     </script>
     

@@ -13,22 +13,22 @@
     
     <div class="max-w-7xl mx-auto px-4 relative z-10 w-full">
         <div class="text-center max-w-4xl mx-auto">
-            <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold tracking-wider text-sm mb-6 animate-pulse">
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold tracking-wider text-sm mb-6 animate-pulse" data-i18n="hero-badge">
                 🚀 NEW: NVMe SSD HOSTING
             </span>
             <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight drop-shadow-lg">
-                Hosting for Ethiopia's <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Brilliant Businesses</span>
+                <span data-i18n="hero-title-main">Hosting for Ethiopia's </span><br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400" data-i18n="hero-title-sub">Brilliant Businesses</span>
             </h1>
-            <p class="text-xl md:text-2xl mb-12 text-gray-300 font-light max-w-3xl mx-auto">
+            <p class="text-xl md:text-2xl mb-12 text-gray-300 font-light max-w-3xl mx-auto" data-i18n="hero-desc">
                 Join thousands of businesses on Ethiopia's fastest, most reliable, and secure web hosting platform.
             </p>
             <div class="flex flex-col sm:flex-row gap-6 justify-center">
                 <a href="{{ route('packages.index') }}" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-blue-50 hover:scale-105 transition-all shadow-xl shadow-blue-900/50 flex items-center justify-center gap-2 group">
-                    View Hosting Plans
+                    <span data-i18n="view-plans">View Hosting Plans</span>
                     <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a>
-                <a href="{{ route('howto.buy') }}" class="bg-transparent border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 hover:border-white transition-all backdrop-blur-sm flex items-center justify-center">
+                <a href="{{ route('howto.buy') }}" class="bg-transparent border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 hover:border-white transition-all backdrop-blur-sm flex items-center justify-center" data-i18n="how-to-buy">
                     How to Buy
                 </a>
             </div>

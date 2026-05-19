@@ -21,93 +21,93 @@
                 <path d="M25 60 Q50 70, 75 60" stroke="#C0C0C0" stroke-width="2" fill="none"/>
             </svg>
         </div> -->
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Choose Your Package</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Select the perfect hosting or domain package tailored to your needs. Our solutions are designed to help you succeed online.</p>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4" data-i18n="choose-package">Choose Your Package</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto" data-i18n="choose-package-sub">Select the perfect hosting or domain package tailored to your needs. Our solutions are designed to help you succeed online.</p>
     </div>
 
     <!-- Hosting Packages -->
     <section class="mb-16">
-        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Hosting Packages</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center" data-i18n="hosting-packages">Hosting Packages</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Starter Package -->
             <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div class="flex justify-between items-start mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Starter Hosting</h3>
-                    <span class="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">Popular</span>
+                    <h3 class="text-2xl font-bold text-gray-900" data-i18n="starter-hosting">Starter Hosting</h3>
+                    <span class="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full" data-i18n="popular">Popular</span>
                 </div>
-                <div class="text-4xl font-bold text-blue-600 mb-6">150 ETB<span class="text-lg text-gray-500">/month</span></div>
+                <div class="text-4xl font-bold text-blue-600 mb-6">150 ETB<span class="text-lg text-gray-500" data-i18n="month">/month</span></div>
                 <ul class="text-gray-600 mb-8 space-y-3">
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>5 GB NVMe Storage</span>
+                        <span data-i18n="starter-nvme">5 GB NVMe Storage</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>50 GB Bandwidth</span>
+                        <span data-i18n="starter-bandwidth">50 GB Bandwidth</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>5 Email Accounts</span>
+                        <span data-i18n="starter-emails">5 Email Accounts</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>1 Free Domain</span>
+                        <span data-i18n="starter-domains">1 Free Domain</span>
                     </li>
                 </ul>
-                <button onclick="handlePackageSelection(2)" class="w-full bg-blue-600 text-white text-center py-4 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg">
+                <button onclick="handlePackageSelection(2)" class="w-full bg-blue-600 text-white text-center py-4 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg" data-i18n="select-starter">
                     Select Starter
                 </button>
             </div>
 
             <!-- Professional Package -->
             <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-blue-500 relative">
-                <div class="absolute -top-3 -right-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">Recommended</div>
+                <div class="absolute -top-3 -right-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full" data-i18n="recommended">Recommended</div>
                 <div class="flex justify-between items-start mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Professional Hosting</h3>
-                    <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">Best Value</span>
+                    <h3 class="text-2xl font-bold text-gray-900" data-i18n="professional-hosting">Professional Hosting</h3>
+                    <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full" data-i18n="best-value">Best Value</span>
                 </div>
-                <div class="text-4xl font-bold text-blue-600 mb-6">300 ETB<span class="text-lg text-gray-500">/month</span></div>
+                <div class="text-4xl font-bold text-blue-600 mb-6">300 ETB<span class="text-lg text-gray-500" data-i18n="month">/month</span></div>
                 <ul class="text-gray-600 mb-8 space-y-3">
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>15 GB NVMe Storage</span>
+                        <span data-i18n="pro-nvme">15 GB NVMe Storage</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>150 GB Bandwidth</span>
+                        <span data-i18n="pro-bandwidth">150 GB Bandwidth</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>15 Email Accounts</span>
+                        <span data-i18n="pro-emails">15 Email Accounts</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>2 Free Domains</span>
+                        <span data-i18n="pro-domains">2 Free Domains</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>SSL Certificate</span>
+                        <span data-i18n="pro-ssl">SSL Certificate</span>
                     </li>
                 </ul>
-                <button onclick="handlePackageSelection(3)" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg">
+                <button onclick="handlePackageSelection(3)" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg" data-i18n="select-pro">
                     Select Professional
                 </button>
             </div>
@@ -115,43 +115,43 @@
             <!-- Business Package -->
             <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div class="flex justify-between items-start mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Business Hosting</h3>
-                    <span class="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full">Advanced</span>
+                    <h3 class="text-2xl font-bold text-gray-900" data-i18n="business-hosting">Business Hosting</h3>
+                    <span class="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full" data-i18n="advanced">Advanced</span>
                 </div>
-                <div class="text-4xl font-bold text-blue-600 mb-6">600 ETB<span class="text-lg text-gray-500">/month</span></div>
+                <div class="text-4xl font-bold text-blue-600 mb-6">600 ETB<span class="text-lg text-gray-500" data-i18n="month">/month</span></div>
                 <ul class="text-gray-600 mb-8 space-y-3">
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>50 GB NVMe Storage</span>
+                        <span data-i18n="biz-nvme">50 GB NVMe Storage</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Unlimited Bandwidth</span>
+                        <span data-i18n="biz-bandwidth">Unlimited Bandwidth</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Unlimited Email Accounts</span>
+                        <span data-i18n="biz-emails">Unlimited Email Accounts</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>5 Free Domains</span>
+                        <span data-i18n="biz-domains">5 Free Domains</span>
                     </li>
                     <li class="flex items-start">
                         <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Priority Support</span>
+                        <span data-i18n="biz-support">Priority Support</span>
                     </li>
                 </ul>
-                <button onclick="handlePackageSelection(4)" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center py-4 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold text-lg shadow-lg">
+                <button onclick="handlePackageSelection(4)" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center py-4 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold text-lg shadow-lg" data-i18n="select-biz">
                     Select Business
                 </button>
             </div>
@@ -161,8 +161,8 @@
     <!-- Features Section -->
     <section class="bg-gray-50 rounded-2xl p-12 mb-16">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Why Choose Afronex Host?</h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">We provide reliable hosting solutions with unmatched features and support</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6" data-i18n="why-choose">Why Choose Afronex Host?</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto" data-i18n="why-choose-sub">We provide reliable hosting solutions with unmatched features and support</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -172,8 +172,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l-2-2H5a2 2 0 01-2 2v-4a2 2 0 012-2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Lightning Fast</h3>
-                <p class="text-gray-600">NVMe storage with 3x faster speeds than traditional SSD</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3" data-i18n="lightning-fast">Lightning Fast</h3>
+                <p class="text-gray-600" data-i18n="lightning-fast-desc">NVMe storage with 3x faster speeds than traditional SSD</p>
             </div>
             
             <div class="text-center">
@@ -182,8 +182,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm-6 4h2"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Secure & Reliable</h3>
-                <p class="text-gray-600">SSL certificates and secure payment processing</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3" data-i18n="secure-reliable">Secure & Reliable</h3>
+                <p class="text-gray-600" data-i18n="secure-reliable-desc">SSL certificates and secure payment processing</p>
             </div>
             
             <div class="text-center">
@@ -192,8 +192,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656 3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">24/7 Support</h3>
-                <p class="text-gray-600">Round-the-clock customer support via Telegram and email</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3" data-i18n="support-247">24/7 Support</h3>
+                <p class="text-gray-600" data-i18n="support-247-desc">Round-the-clock customer support via Telegram and email</p>
             </div>
         </div>
     </section>
