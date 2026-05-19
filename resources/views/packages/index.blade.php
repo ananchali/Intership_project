@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-8 flex justify-start">
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Home
+        </a>
+    </div>
     <!-- Hero Section -->
     <div class="text-center mb-16">
         <!-- <div class="w-24 h-24 gradient-bg rounded-full flex items-center justify-center mx-auto mb-8">

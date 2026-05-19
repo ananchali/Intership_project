@@ -207,6 +207,12 @@
             @case(2)
                 <!-- Step 2: Domain Selection & Payment Method -->
                 <div>
+                    <div class="mb-6 flex justify-start">
+                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Packages
+                        </a>
+                    </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                         <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 019 0 9 9 0 01-9 9z"/>
@@ -305,6 +311,12 @@
             @case(4)
                 <!-- Step 4: Payment -->
                 <div>
+                    <div class="mb-6 flex justify-start">
+                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Packages
+                        </a>
+                    </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                         <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-6 4h2"/>
@@ -368,6 +380,12 @@
             @case(5)
                 <!-- Step 5: Confirmation -->
                 <div>
+                    <div class="mb-6 flex justify-start">
+                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Packages
+                        </a>
+                    </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                         <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
