@@ -6,12 +6,20 @@
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
         </svg>
     </button>
-    <div class="absolute right-0 z-50 mt-2 w-44 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 focus:outline-none transition-all duration-200 hidden" id="lang-dropdown" role="menu">
+
+    <div class="absolute right-0 z-50 mt-2 w-52 origin-top-right rounded-xl bg-gray-50 border border-gray-200 shadow-xl focus:outline-none transition-all duration-200 hidden max-h-80 overflow-y-auto" id="lang-dropdown" role="menu">
         <div class="py-1.5 p-1" role="none">
-            <a href="javascript:void(0)" onclick="setLanguage('en')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇬🇧 English</a>
-            <a href="javascript:void(0)" onclick="setLanguage('am')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 አማርኛ (Amharic)</a>
-            <a href="javascript:void(0)" onclick="setLanguage('om')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 Oromoo (Oromo)</a>
-            <a href="javascript:void(0)" onclick="setLanguage('so')" class="text-gray-700 hover:bg-blue-50 hover:text-blue-600 block px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇸🇴 Soomaali (Somali)</a>
+            <a href="javascript:void(0)" onclick="setLanguage('en')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇬🇧 <span>English</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('am')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 <span>አማርኛ (Amharic)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('om')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 <span>Oromoo (Oromo)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('ti')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 <span>ትግርኛ (Tigrinya)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('so')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇸🇴 <span>Soomaali (Somali)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('sw')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇰🇪 <span>Kiswahili (Swahili)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('ar')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇸🇦 <span>العربية (Arabic)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('fr')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇫🇷 <span>Français (French)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('ha')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇳🇬 <span>Hausa</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('yo')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇳🇬 <span>Yorùbá (Yoruba)</span></a>
+            <a href="javascript:void(0)" onclick="setLanguage('zu')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇿🇦 <span>isiZulu (Zulu)</span></a>
         </div>
     </div>
 </div>
@@ -25,13 +33,17 @@
     .goog-tooltip { display: none !important; }
     .goog-tooltip:hover { display: none !important; }
     .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+    /* Scrollable dropdown */
+    #lang-dropdown::-webkit-scrollbar { width: 4px; }
+    #lang-dropdown::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+    #lang-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 </style>
 
 <script type="text/javascript">
     function googleTranslateElementInit() {
         new google.translate.TranslateElement({
             pageLanguage: 'en',
-            includedLanguages: 'en,am,om,so',
+            includedLanguages: 'en,am,om,ti,so,sw,ar,fr,ha,yo,zu',
             autoDisplay: false
         }, 'google_translate_element');
     }
@@ -39,6 +51,20 @@
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
+    const langNames = {
+        en: '🇬🇧 English',
+        am: '🇪🇹 አማርኛ',
+        om: '🇪🇹 Oromoo',
+        ti: '🇪🇹 ትግርኛ',
+        so: '🇸🇴 Soomaali',
+        sw: '🇰🇪 Kiswahili',
+        ar: '🇸🇦 العربية',
+        fr: '🇫🇷 Français',
+        ha: '🇳🇬 Hausa',
+        yo: '🇳🇬 Yorùbá',
+        zu: '🇿🇦 isiZulu'
+    };
+
     function toggleLangDropdown(event) {
         event.stopPropagation();
         const dropdown = document.getElementById('lang-dropdown');
@@ -50,20 +76,17 @@
         document.cookie = "googtrans=/en/" + lang + "; path=/";
         document.cookie = "googtrans=/en/" + lang + "; domain=." + document.domain + "; path=/";
         localStorage.setItem('preferred-lang', lang);
-        
-        // Sync with backend
+
+        // Sync with backend session
         const formData = new FormData();
         formData.append('locale', lang);
         formData.append('_token', '{{ csrf_token() }}');
-        
+
         fetch('/language/switch', {
             method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-            },
+            headers: { 'Accept': 'application/json' },
             body: formData
-        })
-        .finally(() => {
+        }).finally(() => {
             location.reload();
         });
     }
@@ -80,15 +103,10 @@
     // Update the UI label based on current language
     window.addEventListener('DOMContentLoaded', () => {
         const savedLang = localStorage.getItem('preferred-lang') || 'en';
-        const langNames = {
-            en: 'English',
-            am: 'አማርኛ',
-            om: 'Oromoo',
-            so: 'Soomaali'
-        };
         const currentLangSpan = document.getElementById('current-lang-name');
         if (currentLangSpan) {
-            currentLangSpan.innerText = langNames[savedLang] || 'English';
+            currentLangSpan.innerText = (langNames[savedLang] || 'English').replace(/^[\uD800-\uDFFF]{2}\s/, '');
         }
     });
 </script>
+
