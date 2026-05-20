@@ -4,11 +4,11 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="relative bg-blue-900 text-white min-h-[80vh] flex items-center pt-24 pb-32 overflow-hidden">
+<section class="relative text-white min-h-[80vh] flex items-center pt-24 pb-32 overflow-hidden bg-black/40 backdrop-blur-md border-b border-white/5">
     <!-- Background Image with Overlay -->
     <div class="absolute inset-0 z-0">
-        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" alt="Hosting Background" class="w-full h-full object-cover opacity-30 mix-blend-overlay">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/90 via-purple-900/90 to-blue-900/90"></div>
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" alt="Server Background" class="w-full h-full object-cover opacity-10 mix-blend-overlay">
+        <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-transparent"></div>
     </div>
     
     <div class="max-w-7xl mx-auto px-4 relative z-10 w-full">
@@ -17,26 +17,31 @@
                 🚀 NEW: NVMe SSD HOSTING
             </span>
             <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight drop-shadow-lg">
+                @if(app()->getLocale() == 'om')
+                <span class="notranslate" data-i18n="hero-title-main">Hoostii Ajaa'ibaa </span><br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 notranslate" data-i18n="hero-title-sub">Daldaltoota Ethiopiyaaf</span>
+                @else
                 <span data-i18n="hero-title-main">Hosting for Ethiopia's </span><br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400" data-i18n="hero-title-sub">Brilliant Businesses</span>
+                @endif
             </h1>
             <p class="text-xl md:text-2xl mb-12 text-gray-300 font-light max-w-3xl mx-auto" data-i18n="hero-desc">
                 Join thousands of businesses on Ethiopia's fastest, most reliable, and secure web hosting platform.
             </p>
             <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                <a href="{{ route('packages.index') }}" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-blue-50 hover:scale-105 transition-all shadow-xl shadow-blue-900/50 flex items-center justify-center gap-2 group">
+                <a href="{{ route('packages.index') }}" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-500 hover:scale-105 transition-all shadow-xl shadow-blue-900/50 flex items-center justify-center gap-2 group">
                     <span data-i18n="view-plans">View Hosting Plans</span>
                     <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a>
-                <a href="{{ route('howto.buy') }}" class="bg-transparent border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 hover:border-white transition-all backdrop-blur-sm flex items-center justify-center" data-i18n="how-to-buy">
+                <a href="{{ route('howto.buy') }}" class="bg-white/10 border-2 border-white/20 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/20 hover:border-white/40 transition-all backdrop-blur-sm flex items-center justify-center" data-i18n="how-to-buy">
                     How to Buy
                 </a>
             </div>
         </div>
     </div>
     
-    <!-- Wave Shape Divider -->
-    <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-[0]">
+    <!-- Wave Shape Divider (Hidden for Dark Glassmorphism Theme) -->
+    <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] hidden">
         <svg class="relative block w-[calc(100%+1.3px)] h-[50px] md:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.2,201.33,110.53Z" class="fill-white"></path>
         </svg>

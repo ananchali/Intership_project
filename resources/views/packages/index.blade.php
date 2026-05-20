@@ -11,18 +11,9 @@
         </a>
     </div>
     <!-- Hero Section -->
-    <div class="text-center mb-16">
-        <!-- <div class="w-24 h-24 gradient-bg rounded-full flex items-center justify-center mx-auto mb-8">
-            <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="50" fill="#000000"/>
-                <path d="M50 10 C30 10, 10 30, 10 50 C10 70, 30 90, 50 90 C70 90, 90 70, 90 50 C90 35, 75 15, 60 12" fill="#8B4513"/>
-                <circle cx="35" cy="40" r="8" fill="#654321"/>
-                <circle cx="65" cy="40" r="8" fill="#FF0000"/>
-                <path d="M25 60 Q50 70, 75 60" stroke="#C0C0C0" stroke-width="2" fill="none"/>
-            </svg>
-        </div> -->
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4" data-i18n="choose-package">Choose Your Package</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto" data-i18n="choose-package-sub">Select the perfect hosting or domain package tailored to your needs. Our solutions are designed to help you succeed online.</p>
+    <div class="text-center mb-16 max-w-4xl mx-auto bg-white/5 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-white/10 shadow-2xl">
+        <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white drop-shadow-sm" data-i18n="choose-package">Choose Your Package</h1>
+        <p class="text-xl text-gray-300 font-light max-w-3xl mx-auto leading-relaxed" data-i18n="choose-package-sub">Select the perfect hosting or domain package tailored to your needs. Our solutions are designed to help you succeed online.</p>
     </div>
 
     <!-- Hosting Packages -->

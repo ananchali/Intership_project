@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminPackageController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminCustomerController;
+use App\Http\Controllers\LanguageController;
 
 // Public routes
 use App\Http\Controllers\SupportController;
@@ -146,3 +147,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 });
+
+// Language switching route
+Route::post('/language/switch', [LanguageController::class, 'switch'])->name('language.switch');

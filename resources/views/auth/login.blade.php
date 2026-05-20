@@ -5,9 +5,9 @@
 @section('content')
 <div class="min-h-screen flex items-stretch bg-gray-50">
     <!-- Left Side: Branding/Image -->
-    <div class="hidden lg:flex w-1/2 relative bg-blue-900 text-white overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-purple-900/90"></div>
+    <div class="hidden lg:flex w-1/2 relative text-white overflow-hidden bg-black/40 backdrop-blur-md border-r border-white/5">
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-15 mix-blend-overlay">
+        <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-transparent"></div>
         <div class="relative z-10 p-16 flex flex-col justify-between w-full">
             <div>
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group inline-flex">

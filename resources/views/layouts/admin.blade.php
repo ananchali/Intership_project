@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - Admin Dashboard</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/glassmorphism.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -119,54 +119,57 @@
     
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <div class="w-80 bg-white shadow-2xl border-r hidden md:block flex-shrink-0 z-50 transition-all duration-300 relative" id="sidebar">
+        <div class="w-80 bg-black border-r border-white/10 hidden md:block flex-shrink-0 z-50 transition-all duration-300 relative flex flex-col h-screen overflow-y-auto" id="sidebar">
             <!-- Sidebar Toggle -->
-            <div class="p-4 border-b flex justify-center items-center">
-                <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-slate-50 transition-all text-slate-500 hover:text-blue-600 hidden md:block" title="Toggle Sidebar">
+            <div class="p-4 border-b border-white/10 flex justify-center items-center">
+                <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-white/5 transition-all text-slate-400 hover:text-white hidden md:block" title="Toggle Sidebar">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
 
-            <div class="p-8 border-b flex items-center justify-center logo-container transition-all">
+            <div class="p-8 border-b border-white/10 flex flex-col items-center justify-center logo-container transition-all gap-4">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-full overflow-hidden shadow-lg bg-white flex items-center justify-center flex-shrink-0 border border-slate-100 transition-all transform hover:scale-105">
+                    <div class="w-12 h-12 rounded-full overflow-hidden shadow-lg bg-white flex items-center justify-center flex-shrink-0 border border-slate-800 transition-all transform hover:scale-105">
                         <img src="{{ asset('images/logo.png') }}" alt="Afronex Logo" class="w-full h-full object-cover">
                     </div>
                     <div class="sidebar-header-text">
-                        <h2 class="text-xl font-black text-slate-900 tracking-tight">Admin CP</h2>
-                        <a href="{{ route('home') }}" class="text-[10px] text-blue-600 font-bold uppercase tracking-widest hover:text-blue-800 flex items-center mt-1 transition-colors">
+                        <h2 class="text-xl font-black text-white tracking-tight">Admin CP</h2>
+                        <a href="{{ route('home') }}" class="text-[10px] text-blue-400 font-bold uppercase tracking-widest hover:text-blue-300 flex items-center mt-1 transition-colors">
                             View Site
                         </a>
                     </div>
                 </div>
+                <div class="sidebar-header-text">
+                    @include('partials.language_switcher')
+                </div>
             </div>
             
             <nav class="mt-10 px-6 space-y-3">
-                <a href="{{ route('admin.dashboard') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.dashboard') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.dashboard') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
-                <a href="{{ route('admin.packages.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.packages.*') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <a href="{{ route('admin.packages.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.packages.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-7 0V4"></path></svg>
                     <span class="sidebar-text">Packages</span>
                 </a>
-                <a href="{{ route('admin.orders.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.orders.*') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <a href="{{ route('admin.orders.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.orders.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                     <span class="sidebar-text">Orders</span>
                 </a>
-                <a href="{{ route('admin.payment-methods.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.payment-methods.*') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <a href="{{ route('admin.payment-methods.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.payment-methods.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 03 3z"></path></svg>
                     <span class="sidebar-text">Bank Details</span>
                 </a>
             </nav>
             
-            <div class="absolute bottom-0 w-80 p-8 border-t bg-slate-50/50 logout-container transition-all">
+            <div class="mt-auto w-full p-8 border-t border-white/10 bg-black logout-container transition-all">
                 <form action="{{ route('admin.logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="logout-button flex items-center w-full px-5 py-4 text-rose-600 font-bold hover:bg-rose-50 rounded-2xl transition-all group">
-                        <svg class="h-5 w-5 md:mr-4 text-rose-400 group-hover:text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <button type="submit" class="logout-button flex items-center w-full px-5 py-4 text-rose-500 font-bold hover:bg-rose-950/20 rounded-2xl transition-all group">
+                        <svg class="h-5 w-5 md:mr-4 text-rose-400 group-hover:text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span class="logout-text">Logout</span>
                     </button>
                 </form>
