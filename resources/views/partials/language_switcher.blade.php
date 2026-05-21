@@ -7,8 +7,11 @@
         </svg>
     </button>
 
-    <div class="absolute right-0 z-50 mt-2 w-52 origin-top-right rounded-xl bg-gray-50 border border-gray-200 shadow-xl focus:outline-none transition-all duration-200 hidden max-h-80 overflow-y-auto" id="lang-dropdown" role="menu">
-        <div class="py-1.5 p-1" role="none">
+    <div class="absolute right-0 z-50 mt-2 w-52 origin-top-right rounded-xl bg-gray-50 border border-gray-200 shadow-xl focus:outline-none transition-all duration-200 hidden max-h-64 overflow-y-auto overscroll-contain" id="lang-dropdown" role="menu">
+        <div class="p-2 sticky top-0 bg-gray-50 border-b border-gray-200 z-10 rounded-t-xl">
+            <input type="text" id="lang-search" onkeyup="filterLanguages()" onclick="event.stopPropagation()" placeholder="Search language..." class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white text-gray-700 placeholder-gray-400">
+        </div>
+        <div class="py-1.5 p-1" role="none" id="lang-list">
             <a href="javascript:void(0)" onclick="setLanguage('en')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇬🇧 <span>English</span></a>
             <a href="javascript:void(0)" onclick="setLanguage('am')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 <span>አማርኛ (Amharic)</span></a>
             <a href="javascript:void(0)" onclick="setLanguage('om')"  class="lang-option text-gray-700 hover:bg-gray-200 hover:text-blue-700 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors" role="menuitem">🇪🇹 <span>Oromoo (Oromo)</span></a>
@@ -34,7 +37,7 @@
     .goog-tooltip:hover { display: none !important; }
     .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
     /* Scrollable dropdown */
-    #lang-dropdown::-webkit-scrollbar { width: 4px; }
+    #lang-dropdown::-webkit-scrollbar { width: 6px; }
     #lang-dropdown::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
     #lang-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 </style>
@@ -68,7 +71,33 @@
     function toggleLangDropdown(event) {
         event.stopPropagation();
         const dropdown = document.getElementById('lang-dropdown');
-        if (dropdown) dropdown.classList.toggle('hidden');
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                const searchInput = document.getElementById('lang-search');
+                if (searchInput) {
+                    searchInput.value = '';
+                    filterLanguages(); // reset filter
+                    setTimeout(() => searchInput.focus(), 50); // focus the search field
+                }
+            }
+        }
+    }
+
+    function filterLanguages() {
+        const input = document.getElementById('lang-search');
+        const filter = input.value.toLowerCase();
+        const nodes = document.querySelectorAll('.lang-option');
+        
+        nodes.forEach(node => {
+            const text = node.innerText || node.textContent;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+                // We use flex in class, so we reset display to empty so flex class applies or explicitly set to flex
+                node.style.setProperty('display', 'flex', 'important');
+            } else {
+                node.style.setProperty('display', 'none', 'important');
+            }
+        });
     }
 
     function setLanguage(lang) {
