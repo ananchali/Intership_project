@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -30,8 +30,8 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+# Install PHP dependencies (ignore mongodb ext since we use PostgreSQL in production)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-req=ext-mongodb
 
 # Install Node dependencies and build Vite assets
 RUN npm install && npm run build
