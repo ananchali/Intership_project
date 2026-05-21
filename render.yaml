@@ -25,6 +25,10 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        # We don't have the exact Render URL yet, but Laravel handles relative URLs well usually.
-        # Alternatively, you can override this in the Render dashboard later.
-        sync: false
+        value: https://payment-verification-system.onrender.com
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_STORE
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
