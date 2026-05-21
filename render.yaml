@@ -21,14 +21,14 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_KEY
-        generateValue: true
+        generate: true
       - key: APP_URL
         value: https://payment-verification-system.onrender.com
       - key: SESSION_DRIVER
         value: cookie
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: LOG_CHANNEL
         value: stderr
