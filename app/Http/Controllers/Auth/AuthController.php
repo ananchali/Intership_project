@@ -52,75 +52,80 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        $role = $request->input('role', 'customer');
+            $role = $request->input('role', 'customer');
 
-        // If trying to log in as admin, enforce admin email check
-        if ($role === 'admin' && $credentials['email'] !== 'ananchali36@gmail.com') {
-            return back()->withErrors([
-                'email' => 'The administrative email address provided is incorrect.',
-            ])->withInput();
-        }
-
-        // Fallback for admin user on standard login form
-        if ($credentials['email'] === 'ananchali36@gmail.com' && $credentials['password'] === '12345qwer') {
-            $admin = Customer::firstOrCreate(
-                ['email' => 'ananchali36@gmail.com'],
-                [
-                    'name' => 'Admin User',
-                    'phone' => '+251911234567',
-                    'password_hash' => Hash::make('12345qwer'),
-                    'is_active' => true,
-                ]
-            );
-            
-            // Ensure the password hash is up to date if they existed with a different password
-            if (!Hash::check('12345qwer', $admin->password_hash)) {
-                $admin->update(['password_hash' => Hash::make('12345qwer')]);
-            }
-
-            Auth::login($admin);
-            $request->session()->regenerate();
-            
-            return redirect()->route('admin.dashboard');
-        }
-
-        // Enforce that customers cannot log in through admin role
-        if ($role === 'admin' && $credentials['email'] === 'ananchali36@gmail.com') {
-            return back()->withErrors([
-                'email' => 'Invalid admin credentials.',
-            ])->withInput();
-        }
-
-        // Find the user by email
-        $customer = Customer::where('email', $credentials['email'])->first();
-        
-        if ($customer && Hash::check($credentials['password'], $customer->password_hash)) {
-            Auth::login($customer);
-            $request->session()->regenerate();
-            
-            // Debug: Check if user is actually authenticated
-            if (!Auth::check()) {
+            // If trying to log in as admin, enforce admin email check
+            if ($role === 'admin' && $credentials['email'] !== 'ananchali36@gmail.com') {
                 return back()->withErrors([
-                    'email' => 'Authentication failed after login.',
-                ]);
+                    'email' => 'The administrative email address provided is incorrect.',
+                ])->withInput();
             }
-            
-            // Check if user is admin
-            if ($request->email === 'ananchali36@gmail.com') {
+
+            // Fallback for admin user on standard login form
+            if ($credentials['email'] === 'ananchali36@gmail.com' && $credentials['password'] === '12345qwer') {
+                $admin = Customer::firstOrCreate(
+                    ['email' => 'ananchali36@gmail.com'],
+                    [
+                        'name' => 'Admin User',
+                        'phone' => '+251911234567',
+                        'password_hash' => Hash::make('12345qwer'),
+                        'is_active' => true,
+                    ]
+                );
+                
+                // Ensure the password hash is up to date if they existed with a different password
+                if (!Hash::check('12345qwer', $admin->password_hash)) {
+                    $admin->update(['password_hash' => Hash::make('12345qwer')]);
+                }
+
+                Auth::login($admin);
+                $request->session()->regenerate();
+                
                 return redirect()->route('admin.dashboard');
             }
-            
-            return redirect()->route('customer.dashboard');
-        }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+            // Enforce that customers cannot log in through admin role
+            if ($role === 'admin' && $credentials['email'] === 'ananchali36@gmail.com') {
+                return back()->withErrors([
+                    'email' => 'Invalid admin credentials.',
+                ])->withInput();
+            }
+
+            // Find the user by email
+            $customer = Customer::where('email', $credentials['email'])->first();
+            
+            if ($customer && Hash::check($credentials['password'], $customer->password_hash)) {
+                Auth::login($customer);
+                $request->session()->regenerate();
+                
+                // Check if user is admin
+                if ($request->email === 'ananchali36@gmail.com') {
+                    return redirect()->route('admin.dashboard');
+                }
+                
+                return redirect()->route('customer.dashboard');
+            }
+
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
+
+        } catch (\Exception $e) {
+            // Return the real error as JSON so we can diagnose the 500
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'type' => get_class($e),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+            ], 500);
+        }
     }
 
     public function adminLogin(Request $request)
