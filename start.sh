@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# Map Render's DATABASE_URL to Laravel's expected DB_URL
+if [ -n "$DATABASE_URL" ]; then
+    export DB_URL="$DATABASE_URL"
+fi
+
 # Cache configurations
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
 # Run database migrations
-# We use --force to bypass the production confirmation prompt
 php artisan migrate --force
 
 # Replace Nginx port if $PORT is defined by Render
