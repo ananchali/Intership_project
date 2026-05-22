@@ -25,14 +25,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files first for better layer caching
-COPY composer.json composer.lock ./
-
-# Install PHP dependencies - ignore ALL platform requirements
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-# Copy rest of application
+# Copy entire application (including composer files) for proper build
 COPY . .
+
+# Install PHP dependencies
+RUN composer update --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+# Copy rest of application (already done above)
+# (no action needed)
 
 # Install Node dependencies and build Vite assets
 RUN npm install && npm run build
