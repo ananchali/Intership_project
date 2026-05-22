@@ -12,18 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Trust all proxies (Render runs behind a load balancer / HTTPS terminator)
-        $trustedProxies = env('TRUSTED_PROXIES', null);
-        if ($trustedProxies) {
-            $middleware->trustProxies(
-                at: $trustedProxies === '*' ? '*' : explode(',', $trustedProxies),
-                headers: Request::HEADER_X_FORWARDED_FOR |
-                         Request::HEADER_X_FORWARDED_HOST |
-                         Request::HEADER_X_FORWARDED_PORT |
-                         Request::HEADER_X_FORWARDED_PROTO |
-                         Request::HEADER_X_FORWARDED_AWS_ELB
-            );
-        }
+        // Always trust all proxies on production (Render's HTTPS load balancer).
+        // Hardcoded as '*' because env() returns null after config:cache runs.
+        $middleware->trustProxies(
+            at: '*',
+            headers: Request::HEADER_X_FORWARDED_FOR |
+                     Request::HEADER_X_FORWARDED_HOST |
+                     Request::HEADER_X_FORWARDED_PORT |
+                     Request::HEADER_X_FORWARDED_PROTO |
+                     Request::HEADER_X_FORWARDED_AWS_ELB
+        );
 
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
