@@ -47,10 +47,13 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex items-center space-x-3 justify-end">
                         <a href="{{ route('admin.packages.edit', $package->id) }}" class="text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded transition-colors font-bold">Edit</a>
-                        <a href="{{ route('admin.packages.delete', ['id' => $package->id]) }}" 
-                           class="text-red-600 hover:text-red-800 bg-red-50 px-3 py-1 rounded transition-colors font-bold cursor-pointer">
-                            Delete
-                        </a>
+                        <form action="{{ route('admin.packages.delete', $package->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this package?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 px-3 py-1 rounded transition-colors font-bold cursor-pointer">
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>

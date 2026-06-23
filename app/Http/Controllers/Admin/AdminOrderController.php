@@ -39,7 +39,8 @@ class AdminOrderController extends Controller
             $order->delete();
             return redirect()->route('admin.orders.index')->with('success', 'Order and all related payment data deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.orders.index')->with('error', 'Error deleting order: ' . $e->getMessage());
+            \Log::error('Order deletion failed for ID ' . $id . ': ' . $e->getMessage());
+            return redirect()->route('admin.orders.index')->with('error', 'An error occurred while deleting the order. Please try again.');
         }
     }
 }

@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Email
+    |--------------------------------------------------------------------------
+    |
+    | The email address used to identify the admin user. Set this via the
+    | ADMIN_EMAIL environment variable rather than hardcoding in source.
+    |
+    */
+
+    'admin_email' => env('ADMIN_EMAIL'),
+
 ];

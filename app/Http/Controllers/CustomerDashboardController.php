@@ -12,8 +12,8 @@ class CustomerDashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Ensure user is not an admin
-        if ($user->email === 'ananchali36@gmail.com') {
+        // Redirect admin to admin dashboard
+        if ($user->email === config('auth.admin_email')) {
             return redirect()->route('admin.dashboard');
         }
 

@@ -72,7 +72,8 @@ class AdminPaymentMethodController extends Controller
             $paymentMethod->delete();
             return redirect()->route('admin.payment-methods.index')->with('success', 'Payment Method deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.payment-methods.index')->with('error', 'Error deleting: ' . $e->getMessage());
+            \Log::error('Payment method deletion failed for ID ' . $id . ': ' . $e->getMessage());
+            return redirect()->route('admin.payment-methods.index')->with('error', 'An error occurred while deleting the payment method. Please try again.');
         }
     }
 }

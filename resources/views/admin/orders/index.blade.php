@@ -49,10 +49,13 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center space-x-3 justify-end">
-                            <a href="{{ route('admin.orders.delete', ['id' => $order->id]) }}" 
-                               class="text-red-600 hover:text-red-800 bg-red-50 px-3 py-1 rounded transition-colors font-bold cursor-pointer">
-                                Delete
-                            </a>
+                            <form action="{{ route('admin.orders.delete', $order->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 px-3 py-1 rounded transition-colors font-bold cursor-pointer">
+                                    Delete
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>

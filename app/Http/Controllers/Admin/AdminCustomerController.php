@@ -38,7 +38,8 @@ class AdminCustomerController extends Controller
             $user->delete();
             return redirect()->route('admin.users.index')->with('success', 'User and all related data deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.users.index')->with('error', 'Error deleting user: ' . $e->getMessage());
+            \Log::error('User deletion failed for ID ' . $id . ': ' . $e->getMessage());
+            return redirect()->route('admin.users.index')->with('error', 'An error occurred while deleting the user. Please try again.');
         }
     }
 }

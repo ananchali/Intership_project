@@ -21,7 +21,7 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: "true"
+        value: "false"
       - key: APP_KEY
         generate: true
       - key: APP_URL
@@ -42,3 +42,5 @@ services:
         value: sync
       - key: TRUSTED_PROXIES
         value: "*"
+      - key: ADMIN_EMAIL
+        sync: false

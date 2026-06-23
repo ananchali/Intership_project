@@ -98,7 +98,7 @@ class AdminPackageController extends Controller
             return redirect()->route('admin.packages.index')->with('success', 'Package deleted successfully.');
         } catch (\Exception $e) {
             \Log::error('Package deletion failed for ID ' . $id . ': ' . $e->getMessage());
-            return redirect()->route('admin.packages.index')->with('error', 'System Error: ' . $e->getMessage());
+            return redirect()->route('admin.packages.index')->with('error', 'An error occurred while deleting the package. Please try again.');
         }
     }
 }

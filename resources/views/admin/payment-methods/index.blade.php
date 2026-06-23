@@ -120,7 +120,11 @@
         <p class="text-slate-300 font-medium mb-8">You are about to permanently delete <strong id="deleteMethodName" class="text-white"></strong>. Any orders referencing this method will lose the bank link.</p>
         <div class="flex gap-3">
             <button onclick="closeDeleteModal()" class="flex-1 px-5 py-3 bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 rounded-2xl font-bold transition-all">Cancel</button>
-            <a id="deleteConfirmLink" href="#" class="flex-1 px-5 py-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-2xl font-black text-center shadow-lg transition-all">Delete</a>
+            <form id="deleteForm" method="POST" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full px-5 py-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-2xl font-black text-center shadow-lg transition-all">Delete</button>
+            </form>
         </div>
     </div>
 </div>
@@ -128,7 +132,7 @@
 <script>
 function confirmDelete(id, name) {
     document.getElementById('deleteMethodName').textContent = name;
-    document.getElementById('deleteConfirmLink').href = `/admin/payment-methods/${id}/delete`;
+    document.getElementById('deleteForm').action = `/admin/payment-methods/${id}`;
     const modal = document.getElementById('deleteModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');

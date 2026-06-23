@@ -120,24 +120,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     Route::post('/login', [AuthController::class, 'adminLogin'])->name('login.submit');
     
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         
         // Package Management
-        Route::get('packages/delete-record', [AdminPackageController::class, 'destroy'])->name('packages.delete');
-        Route::resource('packages', AdminPackageController::class);
+        Route::delete('packages/{id}', [AdminPackageController::class, 'destroy'])->name('packages.delete');
+        Route::resource('packages', AdminPackageController::class)->except(['destroy']);
         
         // Order Management
-        Route::get('orders/delete-record', [AdminOrderController::class, 'destroy'])->name('orders.delete');
+        Route::delete('orders/{id}', [AdminOrderController::class, 'destroy'])->name('orders.delete');
         Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
         
         // User Management
-        Route::get('users/delete-record', [AdminCustomerController::class, 'destroy'])->name('users.delete');
+        Route::delete('users/{id}', [AdminCustomerController::class, 'destroy'])->name('users.delete');
         Route::get('users', [AdminCustomerController::class, 'index'])->name('users.index');
         
         // Payment Method Management
-        Route::get('payment-methods/{id}/delete', [AdminPaymentMethodController::class, 'destroy'])->name('payment-methods.delete');
-        Route::resource('payment-methods', AdminPaymentMethodController::class);
+        Route::delete('payment-methods/{id}', [AdminPaymentMethodController::class, 'destroy'])->name('payment-methods.delete');
+        Route::resource('payment-methods', AdminPaymentMethodController::class)->except(['destroy']);
 
         Route::get('/verifications', [AdminController::class, 'verifications'])->name('verifications.index');
         Route::get('/verifications/pending', [AdminController::class, 'pending'])->name('verifications.pending');
