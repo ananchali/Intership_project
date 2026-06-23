@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PaymentVerificationController extends Controller
 {
@@ -55,11 +56,22 @@ class PaymentVerificationController extends Controller
         );
 
         // Update order status
-        $order = $verification->payment->order;
+        $order = $verification->payment?->order ?? $verification->order;
+        if (!$order) {
+            Log::error('Payment verification approved but associated order not found', [
+                'verification_id' => $verification->id,
+            ]);
+            return redirect()->route('admin.verifications.pending')
+                ->with('warning', 'Payment verified but the associated order could not be found.');
+        }
         $order->update(['status' => 'verified']);
 
         // Send notification to customer
-        $this->notificationService->sendPaymentApprovalNotification($order);
+        if (!$this->notificationService->sendPaymentApprovalNotification($order)) {
+            Log::warning('Failed to send payment approval notification', [
+                'order_id' => $order->id,
+            ]);
+        }
 
         return redirect()->route('admin.verifications.pending')
             ->with('success', 'Payment verified successfully!');
@@ -77,10 +89,18 @@ class PaymentVerificationController extends Controller
         );
 
         // Send notification to customer
-        $this->notificationService->sendPaymentRejectionNotification(
-            $verification->payment->order,
-            $request->admin_notes
-        );
+        $order = $verification->payment?->order ?? $verification->order;
+        if ($order) {
+            if (!$this->notificationService->sendPaymentRejectionNotification($order, $request->admin_notes)) {
+                Log::warning('Failed to send payment rejection notification', [
+                    'order_id' => $order->id,
+                ]);
+            }
+        } else {
+            Log::error('Payment verification rejected but associated order not found', [
+                'verification_id' => $verification->id,
+            ]);
+        }
 
         return redirect()->route('admin.verifications.pending')
             ->with('success', 'Payment rejected successfully!');

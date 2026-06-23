@@ -7,6 +7,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -117,14 +118,17 @@ class AuthController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Return the real error as JSON so we can diagnose the 500
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
+            Log::error('Login failed with unexpected error', [
+                'email' => $credentials['email'] ?? 'unknown',
+                'error' => $e->getMessage(),
                 'type' => get_class($e),
-                'file' => basename($e->getFile()),
+                'file' => $e->getFile(),
                 'line' => $e->getLine(),
-            ], 500);
+            ]);
+
+            return back()->withErrors([
+                'email' => 'An unexpected error occurred. Please try again later.',
+            ])->withInput($request->only('email'));
         }
     }
 

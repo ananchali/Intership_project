@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\PaymentVerification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -53,33 +54,54 @@ class PaymentController extends Controller
         // Upload bank slip
         $bankSlipPath = $request->file('bank_slip')->store('bank_slips', 'public');
 
-        // Create payment
-        $payment = Payment::create([
-            'order_id' => $order->id,
-            'amount' => $order->total_amount,
-            'currency' => $order->currency,
-            'payment_method' => $order->payment_method,
-            'bank_name' => $request->bank_name,
-            'transaction_reference' => $request->transaction_reference,
-            'payment_date' => $request->payment_date,
-            'status' => 'pending',
-        ]);
+        if (!$bankSlipPath) {
+            Log::error('Failed to upload bank slip for order: ' . $order->id);
+            return back()->with('error', 'Failed to upload bank slip. Please try again.')->withInput();
+        }
 
-        // Create payment verification
-        $verification = PaymentVerification::create([
-            'payment_id' => $payment->id,
-            'bank_slip_path' => $bankSlipPath,
-            'customer_name' => $request->customer_name,
-            'transaction_reference' => $request->transaction_reference,
-            'payment_date' => $request->payment_date,
-            'bank_name' => $request->bank_name,
-            'additional_notes' => $request->additional_notes,
-            'status' => 'pending',
-        ]);
+        try {
+            // Create payment
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'amount' => $order->total_amount,
+                'currency' => $order->currency,
+                'payment_method' => $order->payment_method,
+                'bank_name' => $request->bank_name,
+                'transaction_reference' => $request->transaction_reference,
+                'payment_date' => $request->payment_date,
+                'status' => 'pending',
+            ]);
 
-        // Send notifications
-        $this->notificationService->sendPaymentVerificationConfirmation($order);
-        $this->notificationService->sendAdminNewVerificationNotification($verification);
+            // Create payment verification
+            $verification = PaymentVerification::create([
+                'payment_id' => $payment->id,
+                'bank_slip_path' => $bankSlipPath,
+                'customer_name' => $request->customer_name,
+                'transaction_reference' => $request->transaction_reference,
+                'payment_date' => $request->payment_date,
+                'bank_name' => $request->bank_name,
+                'additional_notes' => $request->additional_notes,
+                'status' => 'pending',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create payment records for order: ' . $order->id, [
+                'error' => $e->getMessage(),
+            ]);
+            Storage::disk('public')->delete($bankSlipPath);
+            return back()->with('error', 'Failed to process payment. Please try again.')->withInput();
+        }
+
+        // Send notifications - log failures but don't block the user
+        if (!$this->notificationService->sendPaymentVerificationConfirmation($order)) {
+            Log::warning('Failed to send payment verification confirmation email', [
+                'order_id' => $order->id,
+            ]);
+        }
+        if (!$this->notificationService->sendAdminNewVerificationNotification($verification)) {
+            Log::warning('Failed to send admin notification for new verification', [
+                'verification_id' => $verification->id,
+            ]);
+        }
 
         return redirect()->route('orders.show', $order->id)
             ->with('success', 'Payment details submitted successfully! Your payment is now pending verification.');

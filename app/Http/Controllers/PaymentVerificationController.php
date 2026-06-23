@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PaymentVerification;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PaymentVerificationController extends Controller
@@ -49,18 +50,32 @@ class PaymentVerificationController extends Controller
         $slipPath = null;
         if ($request->hasFile('bank_slip')) {
             $slipPath = $request->file('bank_slip')->store('slips', 'public');
+            if (!$slipPath) {
+                Log::error('Failed to upload bank slip for order: ' . $order->id);
+                return back()->with('error', 'Failed to upload bank slip. Please try again.')->withInput();
+            }
         }
 
-        PaymentVerification::create([
-            'order_id'                  => $order->id,
-            'transaction_reference'     => $request->transaction_number,
-            'additional_notes'          => $request->description,
-            'bank_slip_path'            => $slipPath,
-            'customer_name'             => $request->account_name ?? null,
-            'payment_date'              => $request->transaction_date ?? null,
-            'bank_name'                 => $request->bank_name ?? null,
-            'status'                    => 'pending',
-        ]);
+        try {
+            PaymentVerification::create([
+                'order_id'                  => $order->id,
+                'transaction_reference'     => $request->transaction_number,
+                'additional_notes'          => $request->description,
+                'bank_slip_path'            => $slipPath,
+                'customer_name'             => $request->account_name ?? null,
+                'payment_date'              => $request->transaction_date ?? null,
+                'bank_name'                 => $request->bank_name ?? null,
+                'status'                    => 'pending',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create payment verification for order: ' . $order->id, [
+                'error' => $e->getMessage(),
+            ]);
+            if ($slipPath) {
+                Storage::disk('public')->delete($slipPath);
+            }
+            return back()->with('error', 'Failed to submit verification. Please try again.')->withInput();
+        }
 
         return redirect()->route('orders.success');
     }

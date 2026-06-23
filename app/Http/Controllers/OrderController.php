@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Package;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -30,6 +31,10 @@ class OrderController extends Controller
         }
 
         $package = Package::find($package_id);
+        if (!$package) {
+            return redirect()->route('orders.step1')
+                ->with('error', 'The selected package is no longer available.');
+        }
         return view('orders.step2', compact('package'));
     }
 
@@ -56,6 +61,10 @@ class OrderController extends Controller
         }
         
         $package = Package::find($package_id);
+        if (!$package) {
+            return redirect()->route('orders.step1')
+                ->with('error', 'The selected package is no longer available.');
+        }
         $domainData = [
             'domain_name' => $domain_name,
             'domain_type' => $domain_type,
@@ -82,23 +91,31 @@ class OrderController extends Controller
         ]);
 
         $package = Package::find($request->package_id);
+        if (!$package) {
+            return back()->with('error', 'The selected package is no longer available.')->withInput();
+        }
 
-        $order = Order::create([
-            'order_number' => Order::generateOrderNumber(),
-            'package_id' => $package->id,
-            'customer_id' => auth()->id(),
-            'domain_name' => $request->domain_name,
-            'domain_type' => $request->domain_type,
-            'status' => 'pending',
-            'total_amount' => $package->price,
-            'currency' => $package->currency,
-            'customer_details' => [
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ],
-            'payment_method' => $request->payment_method,
-        ]);
+        try {
+            $order = Order::create([
+                'order_number' => Order::generateOrderNumber(),
+                'package_id' => $package->id,
+                'customer_id' => auth()->id(),
+                'domain_name' => $request->domain_name,
+                'domain_type' => $request->domain_type,
+                'status' => 'pending',
+                'total_amount' => $package->price,
+                'currency' => $package->currency,
+                'customer_details' => [
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                ],
+                'payment_method' => $request->payment_method,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create order', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to place your order. Please try again.')->withInput();
+        }
 
         return redirect()->route('orders.step4', ['order' => $order->id]);
     }
@@ -120,28 +137,37 @@ class OrderController extends Controller
         ]);
 
         $package = Package::find($request->package_id);
+        if (!$package) {
+            return back()->with('error', 'The selected package is no longer available.')->withInput();
+        }
+
         $user = auth()->user();
         $parts = explode(' ', $user?->name ?? 'Customer User');
         $firstName = $request->first_name ?? $parts[0];
         $lastName = $request->last_name ?? ($parts[1] ?? '');
         $domainExt = $request->domain_ext ?? '';
 
-        $order = Order::create([
-            'order_number' => Order::generateOrderNumber(),
-            'package_id' => $package->id,
-            'customer_id' => auth()->id(),
-            'domain_name' => $request->domain_name . $domainExt,
-            'domain_type' => $request->domain_type,
-            'status' => 'pending',
-            'total_amount' => $package->price,
-            'currency' => $package->currency,
-            'customer_details' => [
-                'name' => trim($firstName . ' ' . $lastName),
-                'email' => $request->email ?? $user?->email,
-                'phone' => $request->phone ?? $user?->phone,
-            ],
-            'payment_method' => $request->payment_method,
-        ]);
+        try {
+            $order = Order::create([
+                'order_number' => Order::generateOrderNumber(),
+                'package_id' => $package->id,
+                'customer_id' => auth()->id(),
+                'domain_name' => $request->domain_name . $domainExt,
+                'domain_type' => $request->domain_type,
+                'status' => 'pending',
+                'total_amount' => $package->price,
+                'currency' => $package->currency,
+                'customer_details' => [
+                    'name' => trim($firstName . ' ' . $lastName),
+                    'email' => $request->email ?? $user?->email,
+                    'phone' => $request->phone ?? $user?->phone,
+                ],
+                'payment_method' => $request->payment_method,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create order (yegara flow)', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to place your order. Please try again.')->withInput();
+        }
 
         return redirect()->route('orders.yegara-flow', [
             'step' => 4,
