@@ -3,11 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\HandlesAdminDestroy;
 use App\Models\Order;
+use App\Services\CascadeDeleteService;
 use Illuminate\Http\Request;
 
 class AdminOrderController extends Controller
 {
+    use HandlesAdminDestroy;
+
+    protected CascadeDeleteService $cascadeDeleteService;
+
+    public function __construct(CascadeDeleteService $cascadeDeleteService)
+    {
+        $this->cascadeDeleteService = $cascadeDeleteService;
+    }
+
     public function index()
     {
         $orders = Order::with(['package', 'payments.verification'])
@@ -20,26 +31,13 @@ class AdminOrderController extends Controller
 
     public function destroy(Request $request, $id = null)
     {
-        $id = $id ?: $request->query('id');
-        if (!$id) {
-            return redirect()->route('admin.orders.index')->with('error', 'No order ID provided.');
-        }
-
-        try {
-            $order = Order::findOrFail($id);
-            
-            // Manually ensure related payments and verifications are handled
-            foreach ($order->payments as $payment) {
-                if ($payment->verification) {
-                    $payment->verification->delete();
-                }
-                $payment->delete();
-            }
-            
-            $order->delete();
-            return redirect()->route('admin.orders.index')->with('success', 'Order and all related payment data deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.orders.index')->with('error', 'Error deleting order: ' . $e->getMessage());
-        }
+        return $this->destroyRecord(
+            $request,
+            $id,
+            Order::class,
+            'admin.orders.index',
+            'Order',
+            fn ($order) => $this->cascadeDeleteService->deleteOrderPayments($order)
+        );
     }
 }

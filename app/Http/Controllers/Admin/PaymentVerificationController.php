@@ -5,17 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentVerification;
 use App\Models\Order;
+use App\Services\DashboardStatsService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentVerificationController extends Controller
 {
-    protected $notificationService;
+    protected NotificationService $notificationService;
+    protected DashboardStatsService $dashboardStatsService;
 
-    public function __construct(NotificationService $notificationService)
-    {
+    public function __construct(
+        NotificationService $notificationService,
+        DashboardStatsService $dashboardStatsService
+    ) {
         $this->notificationService = $notificationService;
+        $this->dashboardStatsService = $dashboardStatsService;
     }
 
     public function index()
@@ -54,11 +59,9 @@ class PaymentVerificationController extends Controller
             Auth::id()
         );
 
-        // Update order status
         $order = $verification->payment->order;
         $order->update(['status' => 'verified']);
 
-        // Send notification to customer
         $this->notificationService->sendPaymentApprovalNotification($order);
 
         return redirect()->route('admin.verifications.pending')
@@ -76,7 +79,6 @@ class PaymentVerificationController extends Controller
             Auth::id()
         );
 
-        // Send notification to customer
         $this->notificationService->sendPaymentRejectionNotification(
             $verification->payment->order,
             $request->admin_notes
@@ -88,19 +90,8 @@ class PaymentVerificationController extends Controller
 
     public function dashboard()
     {
-        $stats = [
-            'total_verifications' => PaymentVerification::count(),
-            'pending_verifications' => PaymentVerification::pending()->count(),
-            'approved_today' => PaymentVerification::where('status', 'approved')
-                ->whereDate('processed_at', today())->count(),
-            'rejected_today' => PaymentVerification::where('status', 'rejected')
-                ->whereDate('processed_at', today())->count(),
-        ];
-
-        $recentVerifications = PaymentVerification::with(['payment.order'])
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+        $stats = $this->dashboardStatsService->getVerificationStats();
+        $recentVerifications = $this->dashboardStatsService->getRecentVerifications();
 
         return view('admin.dashboard', compact('stats', 'recentVerifications'));
     }

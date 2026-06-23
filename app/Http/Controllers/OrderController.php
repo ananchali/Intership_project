@@ -5,10 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Package;
 use App\Models\PaymentMethod;
+use App\Services\OrderCreationService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    protected OrderCreationService $orderCreationService;
+
+    public function __construct(OrderCreationService $orderCreationService)
+    {
+        $this->orderCreationService = $orderCreationService;
+    }
+
     // Step 1: Select Package
     public function step1()
     {
@@ -83,22 +91,18 @@ class OrderController extends Controller
 
         $package = Package::find($request->package_id);
 
-        $order = Order::create([
-            'order_number' => Order::generateOrderNumber(),
-            'package_id' => $package->id,
-            'customer_id' => auth()->id(),
-            'domain_name' => $request->domain_name,
-            'domain_type' => $request->domain_type,
-            'status' => 'pending',
-            'total_amount' => $package->price,
-            'currency' => $package->currency,
-            'customer_details' => [
+        $order = $this->orderCreationService->createOrder(
+            $package,
+            [
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
             ],
-            'payment_method' => $request->payment_method,
-        ]);
+            $request->domain_name,
+            $request->domain_type,
+            $request->payment_method,
+            auth()->id()
+        );
 
         return redirect()->route('orders.step4', ['order' => $order->id]);
     }
@@ -126,22 +130,18 @@ class OrderController extends Controller
         $lastName = $request->last_name ?? ($parts[1] ?? '');
         $domainExt = $request->domain_ext ?? '';
 
-        $order = Order::create([
-            'order_number' => Order::generateOrderNumber(),
-            'package_id' => $package->id,
-            'customer_id' => auth()->id(),
-            'domain_name' => $request->domain_name . $domainExt,
-            'domain_type' => $request->domain_type,
-            'status' => 'pending',
-            'total_amount' => $package->price,
-            'currency' => $package->currency,
-            'customer_details' => [
+        $order = $this->orderCreationService->createOrder(
+            $package,
+            [
                 'name' => trim($firstName . ' ' . $lastName),
                 'email' => $request->email ?? $user?->email,
                 'phone' => $request->phone ?? $user?->phone,
             ],
-            'payment_method' => $request->payment_method,
-        ]);
+            $request->domain_name . $domainExt,
+            $request->domain_type,
+            $request->payment_method,
+            auth()->id()
+        );
 
         return redirect()->route('orders.yegara-flow', [
             'step' => 4,

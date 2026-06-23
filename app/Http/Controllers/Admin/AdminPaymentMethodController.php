@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\HandlesAdminDestroy;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 
 class AdminPaymentMethodController extends Controller
 {
+    use HandlesAdminDestroy;
+
     public function index()
     {
         $methods = PaymentMethod::all();
@@ -21,16 +24,9 @@ class AdminPaymentMethodController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:255',
-            'account_name' => 'required|string|max:255',
-            'instructions' => 'nullable|string',
-            'is_active' => 'nullable',
-        ]);
-
+        $data = $request->validate($this->paymentMethodValidationRules());
         $data['is_active'] = $request->has('is_active');
-        
+
         PaymentMethod::create($data);
 
         return redirect()->route('admin.payment-methods.index')->with('success', 'Payment Method created successfully.');
@@ -43,14 +39,7 @@ class AdminPaymentMethodController extends Controller
 
     public function update(Request $request, PaymentMethod $paymentMethod)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:255',
-            'account_name' => 'required|string|max:255',
-            'instructions' => 'nullable|string',
-            'is_active' => 'nullable',
-        ]);
-
+        $data = $request->validate($this->paymentMethodValidationRules());
         $data['is_active'] = $request->has('is_active');
 
         $paymentMethod->update($data);
@@ -60,19 +49,23 @@ class AdminPaymentMethodController extends Controller
 
     public function destroy(Request $request, $id = null)
     {
-        $id = $id ?: $request->query('id');
-        if (!$id) {
-            // Check if it was passed via route model binding if id is empty
-            // But since we changed the route, we find it manually
-            return redirect()->route('admin.payment-methods.index')->with('error', 'No payment method ID provided.');
-        }
+        return $this->destroyRecord(
+            $request,
+            $id,
+            PaymentMethod::class,
+            'admin.payment-methods.index',
+            'Payment Method'
+        );
+    }
 
-        try {
-            $paymentMethod = PaymentMethod::findOrFail($id);
-            $paymentMethod->delete();
-            return redirect()->route('admin.payment-methods.index')->with('success', 'Payment Method deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.payment-methods.index')->with('error', 'Error deleting: ' . $e->getMessage());
-        }
+    protected function paymentMethodValidationRules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
+            'instructions' => 'nullable|string',
+            'is_active' => 'nullable',
+        ];
     }
 }

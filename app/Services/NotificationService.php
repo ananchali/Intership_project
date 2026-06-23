@@ -14,27 +14,12 @@ class NotificationService
      */
     public function sendOrderConfirmation(Order $order): bool
     {
-        try {
-            $toEmail = $order->customer_details['email'];
-            $customerName = $order->customer_details['name'];
-            
-            $subject = "Order Confirmation - {$order->order_number}";
-            $data = [
-                'order' => $order,
-                'customerName' => $customerName,
-            ];
-
-            // For now, we'll log the email (configure actual email later)
-            Log::info("Order confirmation email sent to: {$toEmail}", [
-                'order_number' => $order->order_number,
-                'amount' => $order->formatted_amount,
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error("Failed to send order confirmation: " . $e->getMessage());
-            return false;
-        }
+        return $this->sendOrderNotification(
+            $order,
+            "Order Confirmation - {$order->order_number}",
+            'order_confirmation',
+            ['order_number' => $order->order_number, 'amount' => $order->formatted_amount]
+        );
     }
 
     /**
@@ -42,25 +27,12 @@ class NotificationService
      */
     public function sendPaymentVerificationConfirmation(Order $order): bool
     {
-        try {
-            $toEmail = $order->customer_details['email'];
-            $customerName = $order->customer_details['name'];
-            
-            $subject = "Payment Verification Submitted - {$order->order_number}";
-            $data = [
-                'order' => $order,
-                'customerName' => $customerName,
-            ];
-
-            Log::info("Payment verification confirmation sent to: {$toEmail}", [
-                'order_number' => $order->order_number,
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error("Failed to send payment verification confirmation: " . $e->getMessage());
-            return false;
-        }
+        return $this->sendOrderNotification(
+            $order,
+            "Payment Verification Submitted - {$order->order_number}",
+            'payment_verification_confirmation',
+            ['order_number' => $order->order_number]
+        );
     }
 
     /**
@@ -68,25 +40,12 @@ class NotificationService
      */
     public function sendPaymentApprovalNotification(Order $order): bool
     {
-        try {
-            $toEmail = $order->customer_details['email'];
-            $customerName = $order->customer_details['name'];
-            
-            $subject = "Payment Approved - Order {$order->order_number}";
-            $data = [
-                'order' => $order,
-                'customerName' => $customerName,
-            ];
-
-            Log::info("Payment approval notification sent to: {$toEmail}", [
-                'order_number' => $order->order_number,
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error("Failed to send payment approval notification: " . $e->getMessage());
-            return false;
-        }
+        return $this->sendOrderNotification(
+            $order,
+            "Payment Approved - Order {$order->order_number}",
+            'payment_approval',
+            ['order_number' => $order->order_number]
+        );
     }
 
     /**
@@ -94,27 +53,12 @@ class NotificationService
      */
     public function sendPaymentRejectionNotification(Order $order, string $reason): bool
     {
-        try {
-            $toEmail = $order->customer_details['email'];
-            $customerName = $order->customer_details['name'];
-            
-            $subject = "Payment Verification Failed - Order {$order->order_number}";
-            $data = [
-                'order' => $order,
-                'customerName' => $customerName,
-                'reason' => $reason,
-            ];
-
-            Log::info("Payment rejection notification sent to: {$toEmail}", [
-                'order_number' => $order->order_number,
-                'reason' => $reason,
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            Log::error("Failed to send payment rejection notification: " . $e->getMessage());
-            return false;
-        }
+        return $this->sendOrderNotification(
+            $order,
+            "Payment Verification Failed - Order {$order->order_number}",
+            'payment_rejection',
+            ['order_number' => $order->order_number, 'reason' => $reason]
+        );
     }
 
     /**
@@ -123,11 +67,6 @@ class NotificationService
     public function sendAdminNewVerificationNotification(PaymentVerification $verification): bool
     {
         try {
-            $subject = "New Payment Verification - {$verification->payment->order->order_number}";
-            $data = [
-                'verification' => $verification,
-            ];
-
             Log::info("Admin notification sent for new verification", [
                 'order_number' => $verification->payment->order->order_number,
                 'transaction_reference' => $verification->transaction_reference,
@@ -136,6 +75,29 @@ class NotificationService
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to send admin notification: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Common handler for order-based customer notifications.
+     * Extracts customer email/name, logs the notification, and handles exceptions.
+     */
+    protected function sendOrderNotification(
+        Order $order,
+        string $subject,
+        string $notificationType,
+        array $logContext = []
+    ): bool {
+        try {
+            $toEmail = $order->customer_details['email'];
+            $customerName = $order->customer_details['name'];
+
+            Log::info("{$subject} sent to: {$toEmail}", $logContext);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to send {$notificationType} notification: " . $e->getMessage());
             return false;
         }
     }

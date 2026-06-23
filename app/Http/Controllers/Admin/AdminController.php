@@ -3,26 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\BankSlipHelper;
 use App\Models\PaymentVerification;
+use App\Services\DashboardStatsService;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    protected DashboardStatsService $dashboardStatsService;
+
+    public function __construct(DashboardStatsService $dashboardStatsService)
+    {
+        $this->dashboardStatsService = $dashboardStatsService;
+    }
+
     public function dashboard()
     {
-        $stats = [
-            'total_verifications' => PaymentVerification::count(),
-            'pending_verifications' => PaymentVerification::where('status', 'pending')->count(),
-            'approved_today' => PaymentVerification::where('status', 'approved')
-                ->whereDate('processed_at', today())->count(),
-            'rejected_today' => PaymentVerification::where('status', 'rejected')
-                ->whereDate('processed_at', today())->count(),
-        ];
-
-        $recentVerifications = PaymentVerification::with(['payment.order', 'order'])
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+        $stats = $this->dashboardStatsService->getVerificationStats();
+        $recentVerifications = $this->dashboardStatsService->getRecentVerifications();
 
         return view('admin.dashboard', compact('stats', 'recentVerifications'));
     }
@@ -55,14 +53,12 @@ class AdminController extends Controller
     public function showSlip(PaymentVerification $verification)
     {
         $pathStr = $verification->bank_slip_path;
-        if (str_starts_with($pathStr, 'public/')) {
-            $pathStr = str_replace('public/', '', $pathStr);
-        }
+        $path = BankSlipHelper::storagePath($pathStr);
 
-        $path = storage_path('app/public/' . $pathStr);
         if (!file_exists($path)) {
             abort(404);
         }
+
         return response()->file($path);
     }
 
@@ -77,7 +73,6 @@ class AdminController extends Controller
         $action = $request->input('action');
         
         if ($action === 'approve') {
-            // Validate all required payment information before approval
             $requiredFields = [
                 'order_number' => $verification->order?->order_number ?? $verification->payment?->order?->order_number,
                 'bank_name' => $verification->bank_name,
@@ -96,7 +91,6 @@ class AdminController extends Controller
             }
 
             if (!empty($missingFields)) {
-                // Auto-reject if required fields are missing
                 $verification->reject(
                     'Auto-rejected: Missing required payment information: ' . implode(', ', $missingFields),
                     auth()->id()
@@ -111,7 +105,6 @@ class AdminController extends Controller
                 auth()->id()
             );
 
-            // Update order status
             $order = $verification->order;
             if ($order) {
                 $order->update(['status' => 'verified']);

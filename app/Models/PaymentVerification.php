@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Helpers\BankSlipHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 
 class PaymentVerification extends Model
 {
@@ -52,13 +52,8 @@ class PaymentVerification extends Model
     public function getBankSlipUrlAttribute()
     {
         if (!$this->bank_slip_path) return null;
-        
-        $path = $this->bank_slip_path;
-        if (str_starts_with($path, 'public/')) {
-            $path = str_replace('public/', '', $path);
-        }
 
-        return asset('storage/' . $path);
+        return BankSlipHelper::publicUrl($this->bank_slip_path);
     }
 
     /**
