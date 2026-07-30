@@ -1,0 +1,237 @@
+/* Light Mode Theme Override - applied when .light-mode is on <html> */
+
+.light-mode body {
+    background-image: none !important;
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+}
+
+/* Remove glassmorphism from all cards in light mode */
+.light-mode .bg-white,
+.light-mode .bg-gray-50,
+.light-mode .bg-slate-50,
+.light-mode .bg-blue-50,
+.light-mode .bg-emerald-50,
+.light-mode .bg-rose-50,
+.light-mode .bg-gray-100,
+.light-mode .bg-gray-900,
+.light-mode .bg-slate-900,
+.light-mode .bg-blue-900,
+.light-mode .bg-white\/80,
+.light-mode section,
+.light-mode .card,
+.light-mode .rounded-3xl,
+.light-mode .rounded-2xl,
+.light-mode .rounded-xl,
+.light-mode .rounded-\[2\.5rem\],
+.light-mode .bg-slate-50,
+.light-mode .bg-white\/20 {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    color: #1e293b !important;
+}
+
+/* Light mode text colors */
+.light-mode .text-gray-900,
+.light-mode .text-gray-800,
+.light-mode .text-gray-700,
+.light-mode .text-gray-600,
+.light-mode .text-slate-900,
+.light-mode .text-slate-800,
+.light-mode .text-slate-700,
+.light-mode .text-slate-600 {
+    color: #1e293b !important;
+}
+
+.light-mode .text-gray-500,
+.light-mode .text-slate-500,
+.light-mode .text-gray-400 {
+    color: #64748b !important;
+}
+
+/* Light mode hero section */
+.light-mode section.relative.text-white {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%) !important;
+    backdrop-filter: none !important;
+}
+
+.light-mode section.relative.text-white h1,
+.light-mode section.relative.text-white span,
+.light-mode section.relative.text-white p {
+    color: #ffffff !important;
+}
+
+.light-mode section.relative.text-white .text-transparent {
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Light mode feature section */
+.light-mode section.py-24 {
+    background-color: #f8fafc !important;
+}
+
+.light-mode section.py-24 h2 {
+    color: #1e293b !important;
+}
+
+/* Light mode CTA section */
+.light-mode section.bg-gray-900 {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%) !important;
+}
+
+/* Light mode footer */
+.light-mode footer {
+    background-color: #1e293b !important;
+}
+
+/* Fix white text visibility in light mode - make it dark colored */
+.light-mode .text-white,
+.light-mode .text-gray-200,
+.light-mode .text-gray-300,
+.light-mode .text-slate-200,
+.light-mode .text-slate-300 {
+    color: #1e293b !important;
+}
+
+/* But keep white text on dark backgrounds like hero, CTA, footer */
+.light-mode section.relative.text-white .text-white,
+.light-mode section.bg-gray-900 .text-white,
+.light-mode footer .text-white,
+.light-mode footer .text-gray-200,
+.light-mode footer .text-gray-300,
+.light-mode footer .text-slate-200,
+.light-mode footer .text-slate-300,
+.light-mode .gradient-bg .text-white,
+.light-mode .gradient-bg .text-yellow-300 {
+    color: #ffffff !important;
+}
+
+/* Keep hero section headings white */
+.light-mode section.relative.text-white h1,
+.light-mode section.relative.text-white span:not(.notranslate) {
+    color: #ffffff !important;
+}
+
+/* Fix the hero gradient text in light mode */
+.light-mode section.relative.text-white .text-transparent {
+    -webkit-text-fill-color: transparent !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+}
+
+/* Fix navigation text in light mode */
+.light-mode header a,
+.light-mode header button,
+.light-mode header span {
+    color: #374151 !important;
+}
+
+.light-mode header a.text-blue-600 {
+    color: #2563eb !important;
+}
+
+/* Fix feature card text in light mode */
+.light-mode section.py-24 p,
+.light-mode section.py-24 h2,
+.light-mode section.py-24 h3 {
+    color: #1e293b !important;
+}
+
+/* Fix input placeholders in light mode */
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Fix badge text in light mode */
+.light-mode span.inline-block {
+    color: #1e3a5f !important;
+}
+
+/* Fix prices and numbers visibility */
+.light-mode .text-2xl.font-black,
+.light-mode .text-lg.font-black {
+    color: #1e293b !important;
+}
+
+/* Fix button text in light mode */
+.light-mode .bg-blue-600.text-white,
+.light-mode button.bg-blue-600,
+.light-mode a.bg-blue-600 {
+    color: #ffffff !important;
+}
+
+/* Fix hero section CTA buttons in light mode */
+.light-mode section.relative.text-white a.bg-blue-600,
+.light-mode section.relative.text-white button.bg-blue-600 {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border: none !important;
+    backdrop-filter: none !important;
+}
+
+.light-mode section.relative.text-white a.bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: none !important;
+}
+
+.light-mode section.relative.text-white a.bg-white\/10:hover {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Fix "How to Buy" button text in light mode */
+.light-mode section.relative.text-white a[data-i18n="how-to-buy"] {
+    color: #ffffff !important;
+}
+
+/* Light mode header/nav */
+.light-mode header {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.light-mode header span,
+.light-mode header a,
+.light-mode header button {
+    color: #1e293b !important;
+}
+
+/* Light mode inputs */
+.light-mode input,
+.light-mode select,
+.light-mode textarea {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    backdrop-filter: none !important;
+}
+
+/* Light mode tables */
+.light-mode table,
+.light-mode thead,
+.light-mode tbody,
+.light-mode tr,
+.light-mode th,
+.light-mode td {
+    color: #1e293b !important;
+}
+
+.light-mode th {
+    background-color: #f1f5f9 !important;
+}
+
+.light-mode tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* Light mode top banner */
+.light-mode .gradient-bg {
+    background: linear-gradient(135deg, #1e3a5f, #2563eb) !important;
+}

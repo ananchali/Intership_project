@@ -1,0 +1,29 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circular background - orange/amber color like your image -->
+  <circle cx="20" cy="20" r="19" fill="#FF6B35"/>
+  
+  <!-- Inner white ring -->
+  <circle cx="20" cy="20" r="16" fill="white" stroke="none"/>
+  
+  <!-- Orange/amber center circle -->
+  <circle cx="20" cy="20" r="13" fill="#FB923C"/>
+  
+  <!-- Abstract curved design elements matching your image -->
+  <path d="M12 20 Q20 12, 28 20 Q20 28, 12 20" fill="#FF6B35" opacity="0.9"/>
+  
+  <!-- Center white circle with design -->
+  <circle cx="20" cy="20" r="6" fill="white"/>
+  
+  <!-- Orange center dot -->
+  <circle cx="20" cy="20" r="3" fill="#FF6B35"/>
+  
+  <!-- Additional abstract elements - curved lines like in your image -->
+  <path d="M14 16 Q20 20, 26 16" stroke="#FF6B35" stroke-width="2" fill="none" opacity="0.8"/>
+  <path d="M14 24 Q20 20, 26 24" stroke="#FF6B35" stroke-width="2" fill="none" opacity="0.8"/>
+  
+  <!-- Small decorative elements -->
+  <circle cx="15" cy="15" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="25" cy="15" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="15" cy="25" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="25" cy="25" r="1.5" fill="white" opacity="0.7"/>
+</svg>
