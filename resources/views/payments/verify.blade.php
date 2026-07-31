@@ -7,15 +7,7 @@
     <!-- Verification Header -->
     <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
         <div class="text-center mb-8">
-            <div class="w-20 h-20 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-12 h-12 text-white" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="50" fill="#000000"/>
-                    <path d="M50 10 C30 10, 10 30, 10 50 C10 70, 30 90, 50 90 C70 90, 90 70, 90 50 C90 35, 75 15, 60 12" fill="#8B4513"/>
-                    <circle cx="35" cy="40" r="8" fill="#654321"/>
-                    <circle cx="65" cy="40" r="8" fill="#FF0000"/>
-                    <path d="M25 60 Q50 70, 75 60" stroke="#C0C0C0" stroke-width="2" fill="none"/>
-                </svg>
-            </div>
+
             <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Verification</h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 Upload your bank slip or enter transaction details to verify your payment and activate your service
@@ -72,46 +64,7 @@
                 </div>
             </div>
 
-            <!-- Payment Method -->
-            <div class="bg-gray-50 rounded-lg p-6">
-                <h1 class="text-3xl font-bold text-gray-900 mb-4 flex items-center">
-                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-6 4h2"/>
-                </svg>
-                Payment Verification
-            </h1>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-2">Bank Name *</label>
-                        <select id="bank_name" name="bank_name" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                {{ request()->get('bank_name') || session('bank_name') ? 'disabled' : '' }}>
-                            <option value="">Select Bank</option>
-                            @forelse($paymentMethods as $method)
-                                @php $hasDetails = $method->account_number && $method->account_name; @endphp
-                                <option value="{{ $method->name }}" {{ (old('bank_name') ?? request()->get('bank_name') ?? session('bank_name')) == $method->name ? 'selected' : '' }} {{ $hasDetails ? '' : 'disabled' }}>
-                                    @if($method->icon) <img src="{{ $method->icon_url }}" alt="" class="h-4 w-4 inline-block mr-1"> @endif
-                                    {{ $method->name }}{{ $hasDetails ? '' : ' (not configured)' }}
-                                </option>
-                            @empty
-                                <option value="" disabled>No payment methods available</option>
-                            @endforelse
-                        </select>
-                        @if(request()->get('bank_name') || session('bank_name'))
-                            <input type="hidden" name="bank_name" value="{{ request()->get('bank_name') ?? session('bank_name') }}">
-                        @endif
-                    </div>
-                    
-                    <div>
-                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-2">Transaction Date *</label>
-                        <input type="date" id="transaction_date" name="transaction_date" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               value="{{ old('transaction_date') }}">
-                        <p class="mt-1 text-xs text-gray-500">Date when you made the payment</p>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Transaction Reference -->
             <div class="bg-gray-50 rounded-lg p-6">

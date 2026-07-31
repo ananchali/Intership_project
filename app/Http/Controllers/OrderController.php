@@ -110,43 +110,80 @@ class OrderController extends Controller
         return view('orders.step4', compact('order', 'paymentMethod'));
     }
 
-    public function yegaraPlaceOrder(Request $request)
+    public function yegaraStoreDomain(Request $request)
     {
         $request->validate([
             'package_id' => 'required|exists:packages,id',
             'domain_name' => 'required|string',
             'domain_type' => 'required|string',
+            'domain_ext' => 'nullable|string',
+        ]);
+
+        session(['order_data' => [
+            'package_id' => $request->package_id,
+            'domain_name' => $request->domain_name . ($request->domain_ext ?? ''),
+            'domain_type' => $request->domain_type,
+        ]]);
+
+        return redirect()->route('orders.yegara-flow', ['step' => 3, 'package_id' => $request->package_id]);
+    }
+
+    public function yegaraStoreLevel(Request $request)
+    {
+        $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'selected_level' => 'required|string',
+            'total_amount' => 'required|numeric|min:0',
+        ]);
+
+        session(['order_data' => [
+            'package_id' => $request->package_id,
+            'selected_level' => $request->selected_level,
+            'total_amount' => $request->total_amount,
+        ]]);
+
+        return redirect()->route('orders.yegara-flow', ['step' => 3, 'package_id' => $request->package_id]);
+    }
+
+    public function yegaraPlaceOrder(Request $request)
+    {
+        $orderData = session('order_data');
+        if (!$orderData || !isset($orderData['package_id'])) {
+            return redirect()->route('orders.yegara-flow', ['step' => 1]);
+        }
+
+        $request->validate([
             'payment_method' => 'required|string',
         ]);
 
-        $package = Package::find($request->package_id);
+        $package = Package::find($orderData['package_id']);
         $user = auth()->user();
         $parts = explode(' ', $user?->name ?? 'Customer User');
-        $firstName = $request->first_name ?? $parts[0];
-        $lastName = $request->last_name ?? ($parts[1] ?? '');
-        $domainExt = $request->domain_ext ?? '';
+        $firstName = $parts[0];
+        $lastName = $parts[1] ?? '';
 
         $order = Order::create([
             'order_number' => Order::generateOrderNumber(),
             'package_id' => $package->id,
             'customer_id' => auth()->id(),
-            'domain_name' => $request->domain_name . $domainExt,
-            'domain_type' => $request->domain_type,
+            'domain_name' => $orderData['domain_name'] ?? '',
+            'domain_type' => $orderData['domain_type'] ?? 'register',
             'status' => 'pending',
             'total_amount' => $package->price,
             'currency' => $package->currency,
             'customer_details' => [
                 'name' => trim($firstName . ' ' . $lastName),
-                'email' => $request->email ?? $user?->email,
-                'phone' => $request->phone ?? $user?->phone,
+                'email' => $user?->email,
+                'phone' => $user?->phone,
             ],
             'payment_method' => $request->payment_method,
         ]);
 
+        session()->forget('order_data');
+
         return redirect()->route('orders.yegara-flow', [
             'step' => 4,
             'order_id' => $order->id,
-            'payment_method' => $request->payment_method
         ]);
     }
 
@@ -156,14 +193,16 @@ class OrderController extends Controller
             return redirect()->route('login')->with('error', 'Please log in to continue.');
         }
 
+        $orderData = session('order_data');
+        if (!$orderData || !isset($orderData['package_id'])) {
+            return redirect()->route('orders.yegara-flow', ['step' => 1]);
+        }
+
         $request->validate([
-            'package_id' => 'required|exists:packages,id',
-            'selected_level' => 'required|string',
-            'total_amount' => 'required|numeric|min:0',
             'payment_method' => 'required',
         ]);
 
-        $package = Package::find($request->package_id);
+        $package = Package::find($orderData['package_id']);
         $user = auth()->user();
 
         if (!$package || $package->type !== 'services') {
@@ -173,7 +212,7 @@ class OrderController extends Controller
         $levels = $package->features['levels'] ?? [];
         $selectedLevelData = null;
         foreach ($levels as $level) {
-            if ($level['name'] === $request->selected_level) {
+            if ($level['name'] === $orderData['selected_level']) {
                 $selectedLevelData = $level;
                 break;
             }
@@ -193,7 +232,7 @@ class OrderController extends Controller
             'customer_id' => auth()->id(),
             'selected_level' => $selectedLevelData,
             'status' => 'pending',
-            'total_amount' => $request->total_amount,
+            'total_amount' => $orderData['total_amount'],
             'currency' => $package->currency,
             'customer_details' => [
                 'name' => trim($firstName . ' ' . $lastName),
@@ -202,6 +241,8 @@ class OrderController extends Controller
             ],
             'payment_method' => $request->payment_method,
         ]);
+
+        session()->forget('order_data');
 
         return redirect()->route('orders.yegara-flow', [
             'step' => 4,

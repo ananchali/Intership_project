@@ -170,6 +170,62 @@
         </table>
     </div>
 </div>
+<!-- Recent Orders Table -->
+<div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden mt-8">
+    <div class="px-10 py-8 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="text-xl font-black text-slate-900 tracking-tight">Recent Orders</h3>
+        <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-bold tracking-tight transition-colors group/link">
+            View All Orders
+            <svg class="h-4 w-4 ml-2 transform group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+        </a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100">
+            <thead class="bg-slate-50/50">
+                <tr>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Order #</th>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Customer</th>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Package</th>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Amount</th>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
+                    <th class="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Date</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100">
+                @forelse($recentOrders as $order)
+                <tr class="hover:bg-slate-50/40 transition-all duration-300">
+                    <td class="px-10 py-7 text-sm font-bold text-blue-600">{{ $order->order_number }}</td>
+                    <td class="px-10 py-7 text-sm text-slate-900 font-medium">{{ $order->customer_details['name'] ?? 'N/A' }}</td>
+                    <td class="px-10 py-7 text-sm text-slate-600">{{ $order->package->name ?? 'N/A' }}</td>
+                    <td class="px-10 py-7 text-sm font-bold text-slate-900">{{ number_format($order->total_amount) }} {{ $order->currency }}</td>
+                    <td class="px-10 py-7">
+                        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase shadow-sm
+                            @if($order->status === 'pending') bg-amber-50 text-amber-600 border border-amber-200/80
+                            @elseif($order->status === 'verified') bg-emerald-50 text-emerald-600 border border-emerald-200/80
+                            @else bg-rose-50 text-rose-600 border border-rose-200/80 @endif">
+                            {{ $order->status }}
+                        </span>
+                    </td>
+                    <td class="px-10 py-7 text-sm text-slate-500">{{ $order->created_at->format('M j, Y') }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="px-10 py-20 text-center text-slate-400">
+                        <div class="flex flex-col items-center">
+                            <div class="p-6 bg-slate-50 rounded-full mb-6 text-slate-200">
+                                <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <p class="font-black text-slate-900 text-lg">No orders found</p>
+                            <p class="text-sm mt-2">Orders will appear here once customers place them.</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script>
 function dismissNotif(id) {
     fetch('/admin/notifications/' + id + '/dismiss', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })

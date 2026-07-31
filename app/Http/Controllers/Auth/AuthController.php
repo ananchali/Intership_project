@@ -361,6 +361,42 @@ class AuthController extends Controller
         return view('auth.login-otp', compact('masked'));
     }
 
+    public function resendLoginOtp(Request $request, OtpService $otpService)
+    {
+        $phone = session('login_otp_phone');
+
+        if (!$phone) {
+            return back()->withErrors(['otp' => 'Session expired. Please login again.']);
+        }
+
+        $verification = $otpService->generate($phone);
+
+        if (app()->environment('local')) {
+            session()->flash('debug_otp', $verification->otp);
+        }
+
+        return back()->with('success', 'A new OTP has been sent to your phone.');
+    }
+
+    public function ajaxResendLoginOtp(Request $request, OtpService $otpService)
+    {
+        $phone = session('login_otp_phone');
+
+        if (!$phone) {
+            return response()->json(['success' => false, 'message' => 'Session expired. Please login again.']);
+        }
+
+        $verification = $otpService->generate($phone);
+
+        $response = ['success' => true, 'message' => 'A new OTP has been sent to your phone.'];
+
+        if (app()->environment('local')) {
+            $response['otp'] = $verification->otp;
+        }
+
+        return response()->json($response);
+    }
+
     public function loginVerifyOtp(Request $request, OtpService $otpService)
     {
         $customerId = session('login_otp_customer_id');

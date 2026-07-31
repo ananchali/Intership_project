@@ -15,19 +15,19 @@
         <div class="flex items-center justify-between mb-8">
             @php
                 $stepLabels = $isService
-                    ? ['Select Package', 'Select Level', 'Order Details', 'Payment', 'Confirmation']
-                    : ['Select Package', 'Domain Selection', 'Order Details', 'Payment', 'Confirmation'];
+                    ? ['Select Package', 'Select Level', 'Payment Method', 'Payment']
+                    : ['Select Package', 'Domain Selection', 'Payment Method', 'Payment'];
             @endphp
             @foreach($stepLabels as $i => $label)
                 @php $stepNum = $i + 1; @endphp
-                <div class="flex items-center @if($stepNum < 5) flex-1 @endif">
+                <div class="flex items-center @if(!$loop->last) flex-1 @endif">
                     <div class="flex items-center">
                         <div class="w-8 h-8 @if($currentStep >= $stepNum) gradient-bg @else bg-gray-300 @endif rounded-full flex items-center justify-center text-white font-bold text-sm @if($currentStep == $stepNum) ring-2 ring-blue-500 ring-offset-2 @endif">
                             {{ $stepNum }}
                         </div>
                         <span class="ml-3 font-medium @if($currentStep >= $stepNum) text-blue-600 @else text-gray-500 @endif hidden md:inline">{{ $label }}</span>
                     </div>
-                    @if($stepNum < 5)
+                    @if(!$loop->last)
                     <div class="flex-1 h-1 @if($currentStep > $stepNum) bg-blue-600 @else bg-gray-300 @endif mx-2 md:mx-4"></div>
                     @endif
                 </div>
@@ -186,10 +186,15 @@
                         </div>
 
                         @if(is_array($selectedPackage->features) && isset($selectedPackage->features['levels']))
-                        <form id="serviceLevelForm" action="{{ route('orders.yegara-place-service') }}" method="POST">
+                        <form id="serviceLevelForm" action="{{ route('orders.yegara-step2-level') }}" method="POST">
                             @csrf
                             <input type="hidden" name="package_id" value="{{ $selectedPackage->id }}">
                             
+                            <div class="mb-6 flex items-center gap-3 bg-blue-50 border-2 border-blue-200 border-dashed rounded-xl px-5 py-4 animate-pulse">
+                                <svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0l3-3m-3 3l-3-3m3 6a2 2 0 110 4 2 2 0 010-4zm-5 2a2 2 0 11-4 0 2 2 0 014 0zm12 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <p class="text-blue-800 font-bold text-sm">Tap or click on <span class="underline">one service</span> below to select it, then continue.</p>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                                 @foreach($selectedPackage->features['levels'] as $index => $level)
                                 <div class="level-card bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-green-400 hover:shadow-md transition-all cursor-pointer flex flex-col" onclick="selectLevel(this, {{ $level['fee'] }})">
@@ -229,38 +234,9 @@
                                 <input type="hidden" name="total_amount" id="totalAmountInput" value="{{ $selectedPackage->registration_fee ?? 0 }}">
                             </div>
 
-                            <div id="paymentMethodSection" class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 hidden">
-                                <h3 class="text-lg font-semibold text-blue-900 mb-4">Select Payment Method</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    @foreach($paymentMethods as $method)
-                                    @php $hasDetails = $method->account_number && $method->account_name; @endphp
-                                    <label class="payment-method border-2 border-gray-200 bg-white rounded-lg p-4 transition-all flex flex-col {{ $hasDetails ? 'hover:border-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed' }}" data-method-id="{{ $method->id }}" data-has-details="{{ $hasDetails ? '1' : '0' }}">
-                                        <div class="flex items-center gap-3">
-                                            <input type="radio" name="payment_method" value="{{ $method->id }}" class="mt-0.5" {{ $hasDetails ? '' : 'disabled' }} {{ $loop->first && $hasDetails ? 'checked' : '' }}>
-                                            @if($method->icon)
-                                            <img src="{{ $method->icon_url }}" alt="{{ $method->name }}" class="h-8 w-8 object-contain rounded-lg border border-gray-200 bg-white p-0.5 flex-shrink-0">
-                                            @endif
-                                            <div>
-                                                <span class="font-semibold text-gray-900">{{ $method->name }}</span>
-                                                <div class="text-xs {{ $hasDetails ? 'text-gray-500' : 'text-red-400' }}">{{ $hasDetails ? $method->account_name : 'Not configured' }}</div>
-                                            </div>
-                                        </div>
-                                        @if($hasDetails)
-                                        <div class="method-details hidden mt-3 pt-3 border-t border-gray-200 text-sm text-gray-700">
-                                            <p><strong>Account:</strong> <span class="font-mono text-blue-700">{{ $method->account_number }}</span></p>
-                                            @if($method->instructions)
-                                            <p class="mt-1 text-gray-500">{{ $method->instructions }}</p>
-                                            @endif
-                                        </div>
-                                        @endif
-                                    </label>
-                                    @endforeach
-                                </div>
-                            </div>
-
                             <div class="text-center">
                                 <button type="submit" id="proceedBtn" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold opacity-50 cursor-not-allowed" disabled>
-                                    Proceed to Payment
+                                    Continue
                                 </button>
                             </div>
                         </form>
@@ -321,7 +297,7 @@
                             </div>
                         </div>
                         
-                        <form id="domainForm" action="{{ route('orders.yegara-place') }}" method="POST" class="hidden space-y-6">
+                        <form id="domainForm" action="{{ route('orders.yegara-step2-domain') }}" method="POST" class="hidden space-y-6">
                             @csrf
                             <input type="hidden" name="package_id" value="{{ $selectedPackage->id ?? request('package_id', 2) }}">
                             <input type="hidden" name="domain_type" id="domain_type_input" value="register">
@@ -345,45 +321,164 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
-                                <div class="relative">
-                                    <select name="payment_method" id="domainPaymentMethod" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
-                                        <option value="">Select Payment Method</option>
-                                        @forelse($paymentMethods as $method)
-                                            @php $hasDetails = $method->account_number && $method->account_name; @endphp
-                                            <option value="{{ $method->id }}" data-icon="{{ $method->icon ? asset('storage/' . $method->icon) : '' }}" data-account="{{ $method->account_number }}" data-name="{{ $method->account_name }}" data-instructions="{{ $method->instructions ?? '' }}" {{ $hasDetails ? '' : 'disabled class=text-gray-400' }}>{{ $method->name }}{{ $hasDetails ? '' : ' (not configured)' }}</option>
-                                        @empty
-                                            <option value="" disabled>No payment methods available</option>
-                                        @endforelse
-                                    </select>
-                                    <div id="domainSelectedIcon" class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none hidden">
-                                        <img src="" alt="" class="h-5 w-5 object-contain">
-                                    </div>
-                                </div>
-                                <div id="domainPaymentDetails" class="hidden mt-3 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                                    <p><strong>Account Name:</strong> <span id="domainAccountName"></span></p>
-                                    <p class="mt-1"><strong>Account Number:</strong> <span id="domainAccountNumber" class="font-mono"></span></p>
-                                    <p id="domainInstructions" class="mt-1 text-gray-600"></p>
-                                </div>
-                            </div>
-                            
                             <div class="text-center">
                                 <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-                                    Proceed to Payment
+                                    Continue
                                 </button>
                             </div>
                         </form>
                     </div>
                 @endif
                 
+            @case(3)
+                @php $orderData = session('order_data'); @endphp
+                @if(!$orderData || !isset($orderData['package_id']))
+                    <div class="text-center py-16">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">No Order Data Found</h3>
+                        <p class="text-gray-500 mb-6">Please select a package first before choosing payment method.</p>
+                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">Browse Packages</a>
+                    </div>
+                @else
+                <!-- Step 3: Payment Method Selection -->
+                <div>
+                    <div class="mb-6 flex justify-start">
+                        <a href="{{ route('orders.yegara-flow', ['step' => 2, 'package_id' => session('order_data.package_id')]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back
+                        </a>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-6 4h2"/>
+                        </svg>
+                        Select Payment Method
+                    </h2>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-blue-900 mb-4">Order Summary</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @if($orderData && isset($orderData['package_id']))
+                                @php $pkg = \App\Models\Package::find($orderData['package_id']); @endphp
+                                <p><strong>Package:</strong> {{ $pkg->name ?? 'N/A' }}</p>
+                                @if(isset($orderData['domain_name']))
+                                <p><strong>Domain:</strong> {{ $orderData['domain_name'] }}</p>
+                                @endif
+                                @if(isset($orderData['selected_level']))
+                                <p><strong>Level:</strong> {{ $orderData['selected_level'] }}</p>
+                                @endif
+                                <p><strong>Total Amount:</strong> <span class="text-lg font-bold text-blue-700">
+                                    {{ number_format($orderData['total_amount'] ?? $pkg->price) }} {{ $pkg->currency ?? 'ETB' }}
+                                </span></p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <form id="paymentMethodForm" action="{{ $isService ? route('orders.yegara-place-service') : route('orders.yegara-place') }}" method="POST">
+                        @csrf
+                        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @forelse($paymentMethods as $method)
+                                @php $hasDetails = $method->account_number && $method->account_name; @endphp
+                                <label class="payment-method border-2 border-gray-200 bg-white rounded-lg p-4 transition-all flex flex-col {{ $hasDetails ? 'hover:border-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed' }}" data-has-details="{{ $hasDetails ? '1' : '0' }}">
+                                    <div class="flex items-center gap-3">
+                                        <input type="radio" name="payment_method" value="{{ $method->id }}" class="mt-0.5" {{ $hasDetails ? '' : 'disabled' }} {{ $loop->first && $hasDetails ? 'checked' : '' }}>
+                                        @if($method->icon)
+                                        <img src="{{ $method->icon_url }}" alt="{{ $method->name }}" class="h-8 w-8 object-contain rounded-lg border border-gray-200 bg-white p-0.5 flex-shrink-0">
+                                        @endif
+                                        <div>
+                                            <span class="font-semibold text-gray-900">{{ $method->name }}</span>
+                                            <div class="text-xs {{ $hasDetails ? 'text-gray-500' : 'text-red-400' }}">{{ $hasDetails ? $method->account_name : 'Not configured' }}</div>
+                                        </div>
+                                    </div>
+                                    @if($hasDetails)
+                                    <div class="method-details hidden mt-3 pt-3 border-t border-gray-200 text-sm text-gray-700">
+                                        <p><strong>Account:</strong> <span class="font-mono text-blue-700">{{ $method->account_number }}</span></p>
+                                        @if($method->instructions)
+                                        <p class="mt-1 text-gray-500">{{ $method->instructions }}</p>
+                                        @endif
+                                    </div>
+                                    @endif
+                                </label>
+                                @empty
+                                <div class="col-span-2 text-center py-8 text-gray-500">
+                                    <p class="font-semibold">No payment methods available</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        @if($paymentMethods->count() > 0)
+                        <div class="text-center">
+                            <button type="submit" class="bg-blue-600 text-white px-12 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg">
+                                Place Order &amp; Proceed to Payment
+                            </button>
+                        </div>
+                        @endif
+                    </form>
+                </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.payment-method').forEach(function(label) {
+                        label.addEventListener('click', function() {
+                            if (this.dataset.hasDetails !== '1') return;
+                            document.querySelectorAll('.payment-method').forEach(function(m) {
+                                m.classList.remove('border-blue-400', 'bg-blue-50');
+                                m.classList.add('border-gray-200');
+                                var d = m.querySelector('.method-details');
+                                if (d) d.classList.add('hidden');
+                            });
+                            this.classList.remove('border-gray-200');
+                            this.classList.add('border-blue-400', 'bg-blue-50');
+                            var details = this.querySelector('.method-details');
+                            if (details) details.classList.remove('hidden');
+                            var radio = this.querySelector('input[type="radio"]');
+                            if (radio) radio.checked = true;
+                        });
+                    });
+                });
+                </script>
+                </div>
+                @endif
+
             @case(4)
+                @if(request('verified'))
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Payment Submitted Successfully!</h2>
+                    <p class="text-lg text-gray-600 max-w-lg mx-auto mb-8">
+                        Your payment verification has been submitted and is now under review by our admin team.
+                        You will be notified once your payment is verified.
+                    </p>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto mb-8">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <p class="text-sm text-yellow-800 font-medium text-left">
+                                Your order #{{ $order->order_number ?? '' }} is currently pending review. Activation typically takes up to 10 minutes after admin approval.
+                            </p>
+                        </div>
+                    </div>
+                    <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg hover:shadow-blue-500/20 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        Go to Dashboard
+                    </a>
+                </div>
+                @else
                 <!-- Step 4: Payment -->
                 <div>
                     <div class="mb-6 flex justify-start">
-                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                        <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                            Back to Packages
+                            Back to Dashboard
                         </a>
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
@@ -447,71 +542,106 @@
                     </div>
                     
                     <div class="text-center">
-                        <button onclick="window.location.href='{{ route('orders.yegara-flow', ['step' => 5, 'order_id' => request('order_id')]) }}'" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-lg">
+                        <button onclick="document.getElementById('verifyForm').classList.toggle('hidden'); this.classList.add('hidden');" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-lg">
                             I Have Made Payment - Verify Now
                         </button>
                         <p class="mt-4 text-gray-600">
                             Need help? <a href="{{ route('contact') }}" class="text-blue-600 hover:text-blue-800 font-medium">Contact Support</a>
                         </p>
                     </div>
-                </div>
-                
-            @case(5)
-                <!-- Step 5: Confirmation -->
-                <div>
-                    <div class="mb-6 flex justify-start">
-                        <a href="{{ route('orders.yegara-flow', ['step' => 1]) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                            Back to Packages
-                        </a>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                        <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        Payment Verification
-                    </h2>
-                    
-                    <div class="text-center mb-8">
-                        <div class="w-24 h-24 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+
+                    @if($order)
+                    <div id="verifyForm" class="hidden mt-8 pt-8 border-t border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
-                        </div>
-                        @php 
-                            $order = \App\Models\Order::with('package')->find(request('order_id')); 
-                            $bankName = '';
-                            if ($order && is_numeric($order->payment_method)) {
-                                $method = \App\Models\PaymentMethod::find($order->payment_method);
-                                if ($method) $bankName = $method->name;
-                            } else if ($order) {
-                                $bankName = strtoupper($order->payment_method);
-                            }
-                        @endphp
-                        
-                        <p class="text-lg text-gray-700 mb-4">Upload your bank slip or enter transaction details to complete your order</p>
-                        
-                        @if($bankName)
-                            <div class="inline-block bg-blue-50 border border-blue-200 rounded-lg px-6 py-3 mt-2 mb-6">
-                                <p class="text-blue-800 font-medium flex items-center gap-2">
-                                    @php
-                                        $finalMethod = \App\Models\PaymentMethod::find($order?->payment_method);
-                                    @endphp
-                                    @if($finalMethod && $finalMethod->icon)
-                                    <img src="{{ $finalMethod->icon_url }}" alt="{{ $finalMethod->name }}" class="h-6 w-6 object-contain rounded border border-gray-200 bg-white p-0.5">
-                                    @endif
-                                    Selected Payment Method: <strong class="text-blue-900 text-xl ml-2">{{ $bankName }}</strong>
-                                </p>
+                            Payment Verification
+                        </h3>
+
+                        <form action="{{ route('payment.verify.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                            @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->order_number }}">
+                            <input type="hidden" name="amount" value="{{ $order->total_amount }}">
+                            <input type="hidden" name="_from_yegara" value="1">
+
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Transaction Details</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Reference Number *</label>
+                                        <input type="text" name="transaction_number" required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                               placeholder="e.g., FT2501667SR1" value="{{ old('transaction_number') }}">
+                                        <p class="mt-1 text-xs text-gray-500">Found on your payment receipt or bank statement</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Account Holder Name *</label>
+                                        <input type="text" name="account_name" required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                               placeholder="Name as it appears on bank account" value="{{ old('account_name') }}">
+                                    </div>
+                                </div>
                             </div>
-                        @endif
+
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Upload Bank Slip (Optional)</h4>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 4.9V4a2 2 0 00-2-2H6a2 2 0 00-2 2v2.9z"/>
+                                    </svg>
+                                    <p class="text-gray-600 mb-4">Drag and drop your bank slip here or click to browse</p>
+                                    <input type="file" name="bank_slip" accept="image/*,.pdf"
+                                           class="hidden" onchange="handleFileSelect(this)">
+                                    <button type="button" onclick="this.parentElement.querySelector('input[type=file]').click()"
+                                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                        Choose File
+                                    </button>
+                                </div>
+                                <div id="filePreview" class="mt-3 hidden">
+                                    <p class="text-sm text-gray-600 mb-1">Selected file:</p>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span id="fileName" class="text-sm font-medium text-gray-900"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Additional Information</h4>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description / Notes</label>
+                                    <textarea name="description" rows="3"
+                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                              placeholder="Any additional information...">{{ old('description') }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="bg-green-600 text-white px-12 py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg shadow-lg">
+                                    Submit Payment Verification
+                                </button>
+                                <p class="mt-4 text-sm text-gray-600">Your account will be activated within 10 minutes after successful verification</p>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="text-center">
-                        <a href="{{ route('payment.verify', ['order_id' => $order?->order_number, 'amount' => $order?->total_amount, 'bank_name' => $order?->payment_method]) }}" class="bg-blue-600 text-white px-12 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg">
-                            Go to Payment Verification
-                        </a>
-                    </div>
+
+                    <script>
+                    function handleFileSelect(input) {
+                        var file = input.files[0];
+                        var preview = document.getElementById('filePreview');
+                        var fileName = document.getElementById('fileName');
+                        if (file) {
+                            fileName.textContent = file.name;
+                            preview.classList.remove('hidden');
+                        } else {
+                            preview.classList.add('hidden');
+                        }
+                    }
+                    </script>
+                    @endif
                 </div>
+                @endif
         @endswitch
     </div>
 </div>
@@ -555,15 +685,13 @@ function selectLevel(el, fee) {
     var summaryEl = document.getElementById('totalSummary');
     if (summaryEl) summaryEl.classList.remove('hidden');
 
-    document.getElementById('paymentMethodSection').classList.remove('hidden');
     levelSelected = true;
     checkProceed();
 }
 
 function checkProceed() {
     var btn = document.getElementById('proceedBtn');
-    var paymentSelected = document.querySelector('input[name="payment_method"]:checked');
-    if (levelSelected && paymentSelected) {
+    if (levelSelected) {
         btn.disabled = false;
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
     } else {
@@ -573,53 +701,7 @@ function checkProceed() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.payment-method').forEach(function(label) {
-        label.addEventListener('click', function() {
-            if (this.dataset.hasDetails !== '1') return;
-            document.querySelectorAll('.payment-method').forEach(function(m) {
-                m.classList.remove('border-blue-400', 'bg-blue-50');
-                m.classList.add('border-gray-200');
-                var d = m.querySelector('.method-details');
-                if (d) d.classList.add('hidden');
-            });
-            this.classList.remove('border-gray-200');
-            this.classList.add('border-blue-400', 'bg-blue-50');
-            var details = this.querySelector('.method-details');
-            if (details) details.classList.remove('hidden');
-            var radio = this.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-            checkProceed();
-        });
-    });
-
-    var domainPayment = document.getElementById('domainPaymentMethod');
-    if (domainPayment) {
-        domainPayment.addEventListener('change', function() {
-            var sel = this.options[this.selectedIndex];
-            if (sel && sel.disabled) {
-                this.value = '';
-                return;
-            }
-            var details = document.getElementById('domainPaymentDetails');
-            var iconContainer = document.getElementById('domainSelectedIcon');
-            if (sel && sel.value) {
-                document.getElementById('domainAccountName').textContent = sel.getAttribute('data-name') || '';
-                document.getElementById('domainAccountNumber').textContent = sel.getAttribute('data-account') || '';
-                document.getElementById('domainInstructions').textContent = sel.getAttribute('data-instructions') || '';
-                details.classList.remove('hidden');
-                var iconUrl = sel.getAttribute('data-icon');
-                if (iconUrl) {
-                    iconContainer.querySelector('img').src = iconUrl;
-                    iconContainer.classList.remove('hidden');
-                } else {
-                    iconContainer.classList.add('hidden');
-                }
-            } else {
-                details.classList.add('hidden');
-                iconContainer.classList.add('hidden');
-            }
-        });
-    }
+    // No payment method handlers needed in step 2
 });
 </script>
 @endsection

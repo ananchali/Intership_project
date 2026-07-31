@@ -5,9 +5,9 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="mb-8 flex justify-start">
-        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+        <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Back to Home
+            Back to Dashboard
         </a>
     </div>
     <!-- Hero Section -->
@@ -195,6 +195,9 @@
                     <button type="button" id="loginOtpVerifyBtn" onclick="submitLoginOtp()" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Verify & Sign In
                     </button>
+                    <div class="text-center mt-1.5">
+                        <button type="button" id="loginOtpResendBtn" onclick="resendLoginOtp()" class="text-xs text-blue-600 hover:text-blue-800 font-bold">Resend Code</button>
+                    </div>
                     <button type="button" onclick="cancelLoginOtp()" class="w-full text-center text-xs text-gray-500 hover:text-gray-700 mt-1.5 font-semibold underline">Back</button>
                 </div>
             </form>
@@ -412,6 +415,60 @@
             alertEl.textContent = 'Network error. Please try again.';
             btn.disabled = false;
             btn.textContent = 'Verify & Sign In';
+        }
+    }
+
+    let loginOtpResendCooldown = false;
+
+    async function resendLoginOtp() {
+        if (loginOtpResendCooldown) return;
+        const btn = document.getElementById('loginOtpResendBtn');
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+
+        try {
+            const res = await fetch('{{ route("ajax.login.otp.resend") }}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await res.json();
+            const alertEl = document.getElementById('authAlert');
+            if (data.success) {
+                alertEl.classList.remove('hidden');
+                alertEl.classList.add('bg-green-50', 'text-green-700', 'border', 'border-green-200');
+                alertEl.textContent = data.otp ? 'DEV MODE — New OTP: ' + data.otp : data.message || 'A new OTP has been sent to your phone.';
+                loginOtpResendCooldown = true;
+                let countdown = 30;
+                btn.textContent = 'Resend (' + countdown + 's)';
+                const timer = setInterval(function () {
+                    countdown--;
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        btn.disabled = false;
+                        btn.textContent = 'Resend Code';
+                        loginOtpResendCooldown = false;
+                    } else {
+                        btn.textContent = 'Resend (' + countdown + 's)';
+                    }
+                }, 1000);
+            } else {
+                alertEl.classList.remove('hidden');
+                alertEl.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                alertEl.textContent = data.message || 'Failed to resend OTP.';
+                btn.disabled = false;
+                btn.textContent = 'Resend Code';
+            }
+        } catch (e) {
+            const alertEl = document.getElementById('authAlert');
+            alertEl.classList.remove('hidden');
+            alertEl.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+            alertEl.textContent = 'Network error. Please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Resend Code';
         }
     }
 

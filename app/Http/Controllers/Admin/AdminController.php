@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\PaymentApproved;
 use App\Models\AdminNotification;
+use App\Models\Order;
 use App\Models\PaymentVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -27,10 +28,15 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
+        $recentOrders = Order::with('package')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
         $notifications = AdminNotification::orderBy('created_at', 'desc')->limit(20)->get();
         $unreadCount = AdminNotification::unread()->count();
 
-        return view('admin.dashboard', compact('stats', 'recentVerifications', 'notifications', 'unreadCount'));
+        return view('admin.dashboard', compact('stats', 'recentVerifications', 'recentOrders', 'notifications', 'unreadCount'));
     }
 
     public function verifications()
@@ -86,12 +92,9 @@ class AdminController extends Controller
             // Validate all required payment information before approval
             $requiredFields = [
                 'order_number' => $verification->order?->order_number ?? $verification->payment?->order?->order_number,
-                'bank_name' => $verification->bank_name,
                 'transaction_reference' => $verification->transaction_reference,
                 'total_amount' => $verification->payment?->formatted_amount ?? $verification->order?->formatted_amount,
                 'package' => $verification->payment?->order?->package?->name ?? $verification->order?->package?->name,
-                'payment_date' => $verification->payment_date,
-                'bank_slip' => $verification->bank_slip_path,
             ];
 
             $missingFields = [];
@@ -107,6 +110,11 @@ class AdminController extends Controller
                     'Auto-rejected: Missing required payment information: ' . implode(', ', $missingFields),
                     auth()->id()
                 );
+
+                $order = $verification->order;
+                if ($order) {
+                    $order->update(['status' => 'rejected']);
+                }
 
                 return redirect()->route('admin.verifications.pending')
                     ->with('error', 'Payment auto-rejected. Missing required information: ' . implode(', ', $missingFields));
@@ -148,6 +156,11 @@ class AdminController extends Controller
                 $request->admin_notes,
                 auth()->id()
             );
+
+            $order = $verification->order;
+            if ($order) {
+                $order->update(['status' => 'rejected']);
+            }
 
             return redirect()->route('admin.verifications.pending')
                 ->with('success', 'Payment rejected successfully!');

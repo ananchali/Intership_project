@@ -64,6 +64,12 @@
                     </div>
                 @endif
 
+                @if(session('success'))
+                    <div class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm text-center font-bold">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 @if($errors->any())
                     <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
                         <ul class="list-disc pl-5 space-y-1 font-medium">
@@ -97,6 +103,17 @@
                         </button>
                     </form>
                 </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                    <p class="text-sm text-gray-600 font-semibold mb-3">Didn't receive the code?</p>
+                    <form action="{{ route('login.otp.resend') }}" method="POST" id="resendOtpForm">
+                        @csrf
+                        <button type="submit" id="resendOtpBtn" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold text-sm transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Resend Code
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -105,5 +122,37 @@
     document.getElementById('otp')?.addEventListener('input', function (e) {
         this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });
+
+    (function () {
+        const KEY = 'otp_resend_lock';
+        const btn = document.getElementById('resendOtpBtn');
+        if (!btn) return;
+
+        let remaining = parseInt(localStorage.getItem(KEY) || '0', 10);
+        if (remaining > 0) startCooldown(remaining);
+
+        document.getElementById('resendOtpForm').addEventListener('submit', function () {
+            localStorage.setItem(KEY, '30');
+            startCooldown(30);
+        });
+
+        function startCooldown(s) {
+            btn.disabled = true;
+            let countdown = s;
+            btn.textContent = 'Resend (' + countdown + 's)';
+            const timer = setInterval(function () {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    localStorage.removeItem(KEY);
+                    btn.disabled = false;
+                    btn.textContent = 'Resend Code';
+                } else {
+                    localStorage.setItem(KEY, String(countdown));
+                    btn.textContent = 'Resend (' + countdown + 's)';
+                }
+            }, 1000);
+        }
+    })();
 </script>
 @endsection

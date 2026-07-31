@@ -74,6 +74,8 @@ Route::get('/order-yegara', function (\Illuminate\Http\Request $request) {
     
     return view('orders.yegara-flow', compact('order', 'paymentMethods', 'packages'));
 })->name('orders.yegara-flow');
+Route::post('/order-yegara/step2-domain', [OrderController::class, 'yegaraStoreDomain'])->name('orders.yegara-step2-domain');
+Route::post('/order-yegara/step2-level', [OrderController::class, 'yegaraStoreLevel'])->name('orders.yegara-step2-level');
 Route::post('/order-yegara/place', [OrderController::class, 'yegaraPlaceOrder'])->name('orders.yegara-place');
 Route::post('/order-yegara/place-service', [OrderController::class, 'yegaraPlaceServiceOrder'])->name('orders.yegara-place-service');
 
@@ -113,7 +115,9 @@ Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.veri
 // Login OTP (2FA)
 Route::get('/login/otp', [AuthController::class, 'showLoginOtp'])->name('login.otp');
 Route::post('/login/otp', [AuthController::class, 'loginVerifyOtp'])->name('login.otp.verify');
+Route::post('/login/otp/resend', [AuthController::class, 'resendLoginOtp'])->name('login.otp.resend');
 Route::post('/ajax-login-otp', [AuthController::class, 'ajaxLoginVerifyOtp'])->name('ajax.login.otp');
+Route::post('/ajax-login-otp/resend', [AuthController::class, 'ajaxResendLoginOtp'])->name('ajax.login.otp.resend');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');

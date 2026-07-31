@@ -17,7 +17,7 @@ class CustomerDashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        $orders = Order::with(['package', 'payments.verification'])
+        $orders = Order::with(['package', 'verification'])
             ->where('customer_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();

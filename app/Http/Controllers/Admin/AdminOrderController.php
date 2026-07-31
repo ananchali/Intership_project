@@ -11,7 +11,6 @@ class AdminOrderController extends Controller
     public function index()
     {
         $orders = Order::with(['package', 'payments.verification'])
-            ->where('status', '!=', 'pending')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             

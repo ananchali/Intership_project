@@ -116,7 +116,7 @@
                         </td>
                         <td class="px-8 py-6">
                             <div class="text-sm font-bold text-gray-900">{{ $order->package?->name ?? 'N/A' }}</div>
-                            <div class="text-xs text-gray-500 font-semibold mt-1">Hosting Plan</div>
+                            <div class="text-xs text-gray-500 font-semibold mt-1 capitalize">{{ $order->package?->type ?? 'Plan' }}</div>
                         </td>
                         <td class="px-8 py-6">
                             <div class="text-sm font-bold text-gray-900 flex items-center gap-1.5">
@@ -135,6 +135,16 @@
                                 <span class="px-3.5 py-1.5 inline-flex text-xs leading-5 font-black rounded-full bg-amber-100/70 border border-amber-200 text-amber-800 uppercase tracking-wider animate-pulse">
                                     {{ $order->status }}
                                 </span>
+                            @elseif($order->status === 'rejected')
+                                <span class="px-3.5 py-1.5 inline-flex text-xs leading-5 font-black rounded-full bg-red-100/70 border border-red-200 text-red-800 uppercase tracking-wider">
+                                    {{ $order->status }}
+                                </span>
+                                @if($order->verification?->admin_notes)
+                                    <div class="mt-2 max-w-[220px]">
+                                        <div class="text-[10px] text-red-600 font-black uppercase tracking-wider mb-1">Reason</div>
+                                        <div class="text-xs font-semibold text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ $order->verification->admin_notes }}</div>
+                                    </div>
+                                @endif
                             @else
                                 <span class="px-3.5 py-1.5 inline-flex text-xs leading-5 font-black rounded-full bg-gray-100 border border-gray-200 text-gray-600 uppercase tracking-wider">
                                     {{ $order->status }}
@@ -147,6 +157,12 @@
                                    class="inline-flex items-center gap-1.5 text-blue-600 hover:text-white font-extrabold text-sm bg-blue-50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-blue-500/10">
                                     Verify Payment
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </a>
+                            @elseif($order->status === 'rejected')
+                                <a href="{{ route('orders.yegara-flow', ['step' => 4, 'order_id' => $order->id, 'payment_method' => $order->payment_method]) }}" 
+                                   class="inline-flex items-center gap-1.5 text-red-600 hover:text-white font-extrabold text-sm bg-red-50 hover:bg-red-600 px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-red-500/10">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    Resubmit Payment
                                 </a>
                             @else
                                 <span class="inline-flex items-center gap-1 text-gray-400 text-xs font-black uppercase tracking-wider bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-lg select-none">

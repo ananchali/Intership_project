@@ -3,10 +3,16 @@
 @section('title', 'Manage Orders')
 
 @section('content')
-<div class="flex justify-between items-center mb-8">
-    <div>
-        <h1 class="text-3xl font-bold text-gray-900">Orders Management</h1>
-        <p class="text-gray-600 mt-2">View and manage all customer orders and their payment status</p>
+<div class="mb-8">
+    <button onclick="history.back()" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors mb-4 bg-transparent border-none cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Back
+    </button>
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Orders Management</h1>
+            <p class="text-gray-600 mt-2">View and manage all customer orders and their payment status</p>
+        </div>
     </div>
 </div>
 

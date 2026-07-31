@@ -45,6 +45,11 @@ class Order extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function verification()
+    {
+        return $this->hasOne(PaymentVerification::class)->latestOfMany();
+    }
+
     public function paymentVerifications()
     {
         return $this->hasManyThrough(PaymentVerification::class, Payment::class);

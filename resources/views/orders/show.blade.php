@@ -171,8 +171,8 @@
     @endif
 
     <div class="mt-8">
-        <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1">
-            ← Back to Home
+        <a href="{{ route('customer.dashboard') }}" class="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1">
+            ← Back to Dashboard
         </a>
     </div>
 </div>

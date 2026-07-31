@@ -56,6 +56,10 @@
             </div>
 
             <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl shadow-blue-900/10 p-8 md:p-12 border border-white">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-blue-600 transition-colors mb-6">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Home
+                </a>
                 <div class="mb-8 text-center">
                     <h2 class="text-3xl font-black text-gray-900 mb-2 tracking-tight">Sign In</h2>
                     <p class="text-gray-500 font-semibold">Access your secure customer account</p>

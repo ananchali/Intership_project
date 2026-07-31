@@ -34,10 +34,10 @@ class PaymentVerificationController extends Controller
         $validated = $request->validate([
             'order_id'           => 'required',
             'amount'             => 'required|numeric|min:0',
-            'bank_name'          => 'required|string|max:255',
+            'bank_name'          => 'nullable|string|max:255',
             'account_name'       => 'required|string|max:255',
-            'transaction_number' => 'nullable|string|max:255',
-            'transaction_date'   => 'required|date',
+            'transaction_number' => 'nullable|string|max:255|unique:payment_verifications,transaction_reference',
+            'transaction_date'   => 'nullable|date',
             'description'        => 'nullable|string|max:1000',
             'bank_slip'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
@@ -45,10 +45,7 @@ class PaymentVerificationController extends Controller
             'amount.required' => 'Please enter the payment amount.',
             'amount.numeric' => 'Amount must be a valid number.',
             'amount.min' => 'Amount must be greater than zero.',
-            'bank_name.required' => 'Please select a bank or payment method.',
             'account_name.required' => 'Please enter the account holder name.',
-            'transaction_date.required' => 'Please select the transaction date.',
-            'transaction_date.date' => 'Please enter a valid date.',
             'bank_slip.max' => 'Bank slip must be less than 2MB in size.',
         ]);
 
@@ -76,6 +73,9 @@ class PaymentVerificationController extends Controller
             'status'                    => 'pending',
         ]);
 
+        // Reset order to pending when a verification is (re)submitted
+        $order->update(['status' => 'pending']);
+
         AdminNotification::create([
             'type'    => 'payment_verification',
             'title'   => 'New Payment Verification',
@@ -91,7 +91,11 @@ class PaymentVerificationController extends Controller
             \Log::warning('Failed to send admin notification email: ' . $e->getMessage());
         }
 
-        return redirect()->route('orders.success');
+        $redirect = $request->input('_from_yegara')
+            ? redirect()->route('orders.yegara-flow', ['step' => 4, 'order_id' => $order->id, 'verified' => 1])
+            : redirect()->route('orders.success');
+
+        return $redirect->with('success', 'Your payment verification has been submitted successfully and is now under review by our admin team.');
     }
 
     /**
@@ -116,6 +120,8 @@ class PaymentVerificationController extends Controller
     public function showStatus($order_id)
     {
         $verification = PaymentVerification::whereHas('payment.order', function ($query) use ($order_id) {
+            return $query->where('order_number', $order_id);
+        })->orWhereHas('order', function ($query) use ($order_id) {
             return $query->where('order_number', $order_id);
         })->first();
 
