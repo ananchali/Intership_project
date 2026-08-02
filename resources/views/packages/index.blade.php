@@ -5,9 +5,9 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="mb-8 flex justify-start">
-        <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Back to Dashboard
+            Back to Home
         </a>
     </div>
     <!-- Hero Section -->
@@ -350,6 +350,8 @@
                         alertEl.className = 'p-4 rounded-lg mb-6 bg-yellow-50 text-yellow-800 border border-yellow-200';
                         alertEl.innerHTML = 'DEV MODE — OTP: <strong>' + data.otp + '</strong>';
                     }
+                } else if (data.redirect) {
+                    window.location.href = data.redirect;
                 } else {
                     proceedToCheckout();
                 }
@@ -397,7 +399,11 @@
             const data = await res.json();
 
             if (data.success) {
-                proceedToCheckout();
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    proceedToCheckout();
+                }
             } else {
                 alertEl.classList.remove('hidden');
                 alertEl.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');

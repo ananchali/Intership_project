@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminNotification;
+use App\Models\Business;
 use App\Models\Customer;
 use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -19,7 +22,7 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-        return view('auth.register');
+        return view('auth.register', ['otpVerifiedPhone' => session('otp_verified_phone')]);
     }
 
     public function register(Request $request)
@@ -60,6 +63,78 @@ class AuthController extends Controller
             ->with('success', 'Account created successfully! Please login.');
     }
 
+    public function showVendorRegister()
+    {
+        return view('auth.vendor-register', ['otpVerifiedPhone' => session('otp_verified_phone')]);
+    }
+
+    public function vendorRegister(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'business_name' => ['required', 'string', 'max:255'],
+            'owner_name' => ['required', 'string', 'max:255'],
+            'owner_email' => ['required', 'email', 'max:255', 'unique:customers,email', 'unique:businesses,owner_email'],
+            'owner_phone' => ['required', 'string', 'regex:/^09[0-9]{8}$/'],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/'],
+        ], [
+            'owner_phone.regex' => 'Phone number must be exactly 10 digits starting with 09 (e.g., 0911234567)',
+            'owner_email.unique' => 'This email is already registered.',
+            'password.regex' => 'Password must be at least 8 characters and contain uppercase, lowercase, number, and special character',
+            'password.min' => 'Password must be at least 8 characters long',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Require OTP verification
+        $verified = session("otp_verified_phone");
+        if (!$verified || $verified !== $request->owner_phone) {
+            return back()->withErrors(['owner_phone' => 'Please verify your phone number via OTP first.'])->withInput();
+        }
+
+        $slug = Str::slug($request->business_name);
+        $baseSlug = $slug;
+        $counter = 1;
+        while (Business::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
+
+        $business = Business::create([
+            'name' => $request->business_name,
+            'slug' => $slug,
+            'owner_name' => $request->owner_name,
+            'owner_email' => $request->owner_email,
+            'owner_phone' => $request->owner_phone,
+            'is_active' => false,
+            'status' => Business::STATUS_PENDING,
+        ]);
+
+        Customer::create([
+            'name' => $request->owner_name,
+            'email' => $request->owner_email,
+            'phone' => $request->owner_phone,
+            'phone_verified_at' => now(),
+            'password_hash' => Hash::make($request->password),
+            'is_active' => true,
+            'role' => Customer::ROLE_BUSINESS_OWNER,
+            'business_id' => $business->id,
+        ]);
+
+        AdminNotification::create([
+            'type' => 'business_request',
+            'title' => 'New Business Registration',
+            'message' => $request->owner_name . ' registered "' . $request->business_name . '" and is awaiting approval.',
+            'link' => route('admin.businesses.index'),
+            'business_id' => null,
+        ]);
+
+        session()->forget('otp_verified_phone');
+
+        return redirect()->route('login')
+            ->with('success', 'Your business registration has been submitted and is now pending approval by the platform admin.');
+    }
+
     public function login(Request $request, OtpService $otpService)
     {
         try {
@@ -86,11 +161,16 @@ class AuthController extends Controller
                         'phone' => '+251911234567',
                         'password_hash' => Hash::make('12345qwer'),
                         'is_active' => true,
+                        'role' => Customer::ROLE_SUPER_ADMIN,
                     ]
                 );
 
                 if (!Hash::check('12345qwer', $admin->password_hash)) {
                     $admin->update(['password_hash' => Hash::make('12345qwer')]);
+                }
+
+                if (!$admin->isSuperAdmin()) {
+                    $admin->update(['role' => Customer::ROLE_SUPER_ADMIN]);
                 }
 
                 Auth::login($admin);
@@ -132,7 +212,7 @@ class AuthController extends Controller
             Auth::login($customer);
             $request->session()->regenerate();
 
-            return redirect()->route('customer.dashboard');
+            return $this->redirectForRole($customer);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -162,8 +242,13 @@ class AuthController extends Controller
                     'phone' => '+251911234567',
                     'password_hash' => Hash::make('12345qwer'),
                     'is_active' => true,
+                    'role' => Customer::ROLE_SUPER_ADMIN,
                 ]
             );
+
+            if (!$admin->isSuperAdmin()) {
+                $admin->update(['role' => Customer::ROLE_SUPER_ADMIN]);
+            }
 
             Auth::login($admin);
             $request->session()->regenerate();
@@ -306,6 +391,10 @@ class AuthController extends Controller
         Auth::login($customer);
         $request->session()->regenerate();
 
+        if ($customer->isAdmin()) {
+            return response()->json(['success' => true, 'redirect' => route('admin.dashboard')]);
+        }
+
         return response()->json(['success' => true]);
     }
 
@@ -343,6 +432,10 @@ class AuthController extends Controller
 
         session()->forget('login_otp_customer_id');
         session()->forget('login_otp_phone');
+
+        if ($customer->isAdmin()) {
+            return response()->json(['success' => true, 'redirect' => route('admin.dashboard')]);
+        }
 
         return response()->json(['success' => true]);
     }
@@ -431,12 +524,7 @@ class AuthController extends Controller
         session()->forget('login_otp_customer_id');
         session()->forget('login_otp_phone');
 
-        // Check if user is admin
-        if ($customer->email === 'ananchali36@gmail.com') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->route('customer.dashboard');
+        return $this->redirectForRole($customer);
     }
 
     public function logout(Request $request)
@@ -446,5 +534,14 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         
         return redirect()->route('login');
+    }
+
+    private function redirectForRole(Customer $customer)
+    {
+        if ($customer->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->intended(route('customer.dashboard'));
     }
 }

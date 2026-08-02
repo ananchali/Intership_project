@@ -14,6 +14,7 @@ class PaymentVerification extends Model
     protected $fillable = [
         'payment_id',
         'order_id',
+        'business_id',
         'bank_slip_path',
         'customer_name',
         'transaction_reference',
@@ -42,6 +43,11 @@ class PaymentVerification extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
     }
 
     public function processedByUser()

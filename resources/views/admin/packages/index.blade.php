@@ -20,6 +20,9 @@
             <tr>
                 <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
                 <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                @if(auth()->user()->isSuperAdmin())
+                <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Business</th>
+                @endif
                 <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Provider</th>
                 <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Pricing</th>
                 <th class="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Levels / Features</th>
@@ -39,6 +42,13 @@
                         {{ ucfirst($package->type) }}
                     </span>
                 </td>
+                @if(auth()->user()->isSuperAdmin())
+                <td class="px-4 py-4 whitespace-nowrap">
+                    <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-bold rounded-full {{ $package->business ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' }}">
+                        {{ $package->business?->name ?? 'Platform' }}
+                    </span>
+                </td>
+                @endif
                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
                     {{ $package->provider ?? '-' }}
                 </td>

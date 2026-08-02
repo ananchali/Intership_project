@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminPackageController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminCustomerController;
+use App\Http\Controllers\Admin\AdminBusinessController;
 use App\Http\Controllers\LanguageController;
 
 // Public routes
@@ -18,6 +19,9 @@ use App\Http\Controllers\PackageController;
 Route::get('/', function () {
     return view('yegara-home');
 })->name('home');
+
+// Business entry point (customers order through a specific business link)
+Route::get('/b/{business}', [AdminBusinessController::class, 'enter'])->name('business.enter');
 
 Route::get('/support', [SupportController::class, 'index'])->name('support');
 Route::post('/support', [SupportController::class, 'submit'])->name('support.submit');
@@ -48,7 +52,7 @@ Route::get('/payment-verify', function () {
 })->name('payment.verify');
 Route::post('/payment-verify', [PaymentVerificationController::class, 'submit'])->name('payment.verify.submit');
 
-// Yegara flow routes
+// Yegara flow routes (requires login so guests cannot order without an account)
 Route::get('/order-yegara', function (\Illuminate\Http\Request $request) {
     $order = null;
     if ($request->has('order_id')) {
@@ -73,11 +77,11 @@ Route::get('/order-yegara', function (\Illuminate\Http\Request $request) {
     $packages = $grouped;
     
     return view('orders.yegara-flow', compact('order', 'paymentMethods', 'packages'));
-})->name('orders.yegara-flow');
-Route::post('/order-yegara/step2-domain', [OrderController::class, 'yegaraStoreDomain'])->name('orders.yegara-step2-domain');
-Route::post('/order-yegara/step2-level', [OrderController::class, 'yegaraStoreLevel'])->name('orders.yegara-step2-level');
-Route::post('/order-yegara/place', [OrderController::class, 'yegaraPlaceOrder'])->name('orders.yegara-place');
-Route::post('/order-yegara/place-service', [OrderController::class, 'yegaraPlaceServiceOrder'])->name('orders.yegara-place-service');
+})->middleware('auth')->name('orders.yegara-flow');
+Route::post('/order-yegara/step2-domain', [OrderController::class, 'yegaraStoreDomain'])->middleware('auth')->name('orders.yegara-step2-domain');
+Route::post('/order-yegara/step2-level', [OrderController::class, 'yegaraStoreLevel'])->middleware('auth')->name('orders.yegara-step2-level');
+Route::post('/order-yegara/place', [OrderController::class, 'yegaraPlaceOrder'])->middleware('auth')->name('orders.yegara-place');
+Route::post('/order-yegara/place-service', [OrderController::class, 'yegaraPlaceServiceOrder'])->middleware('auth')->name('orders.yegara-place-service');
 
 // Packages route
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
@@ -102,6 +106,8 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+Route::get('/vendor/register', [AuthController::class, 'showVendorRegister'])->name('vendor.register');
+Route::post('/vendor/register', [AuthController::class, 'vendorRegister'])->name('vendor.register.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Modal Auth endpoints
@@ -123,8 +129,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 });
 
-// Order routes
-Route::prefix('order')->name('orders.')->group(function () {
+// Order routes (requires login so guests cannot order without an account)
+Route::prefix('order')->middleware('auth')->name('orders.')->group(function () {
     Route::get('/step-1', [OrderController::class, 'step1'])->name('step1');
     Route::match(['get', 'post'], '/step-2', [OrderController::class, 'step2'])->name('step2');
     Route::match(['get', 'post'], '/step-3', [OrderController::class, 'step3'])->name('step3');
@@ -135,7 +141,7 @@ Route::prefix('order')->name('orders.')->group(function () {
     Route::post('/{order}/confirm', [PaymentVerificationController::class, 'submit'])->name('orders.submit');
 });
 
-Route::get('/success', [PaymentVerificationController::class, 'success'])->name('orders.success');
+Route::get('/success', [PaymentVerificationController::class, 'success'])->name('orders.success')->middleware('auth');
 
 // Payment status check routes
 Route::get('/payment-status', [PaymentVerificationController::class, 'checkStatus'])->name('payment-status.check');
@@ -149,8 +155,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     Route::post('/login', [AuthController::class, 'adminLogin'])->name('login.submit');
     
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+        // Business Management (super admin only)
+        Route::get('businesses/delete-record', [AdminBusinessController::class, 'destroy'])->middleware('super_admin')->name('businesses.delete');
+        Route::resource('businesses', AdminBusinessController::class)->only(['index', 'create', 'store', 'edit', 'update'])->middleware('super_admin');
+        Route::post('businesses/{business}/approve', [AdminBusinessController::class, 'approve'])->middleware('super_admin')->name('businesses.approve');
+        Route::post('businesses/{business}/reject', [AdminBusinessController::class, 'reject'])->middleware('super_admin')->name('businesses.reject');
         
         // Package Management
         Route::get('packages/delete-record', [AdminPackageController::class, 'destroy'])->name('packages.delete');

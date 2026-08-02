@@ -11,6 +11,7 @@ class AdminNotification extends Model
         'title',
         'message',
         'link',
+        'business_id',
         'is_read',
     ];
 

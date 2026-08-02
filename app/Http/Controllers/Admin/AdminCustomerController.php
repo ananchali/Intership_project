@@ -10,7 +10,11 @@ class AdminCustomerController extends Controller
 {
     public function index()
     {
-        $users = Customer::orderBy('created_at', 'desc')->paginate(10);
+        $businessId = $this->businessId();
+        $users = Customer::with('business')
+            ->when($businessId, fn($q) => $q->whereHas('orders', fn($oq) => $oq->where('business_id', $businessId)))
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
@@ -23,6 +27,11 @@ class AdminCustomerController extends Controller
 
         try {
             $user = Customer::findOrFail($id);
+
+            $businessId = $this->businessId();
+            if ($businessId && !$user->orders()->where('business_id', $businessId)->exists()) {
+                abort(403);
+            }
             
             // Manually ensure related orders, payments and verifications are handled
             foreach ($user->orders as $order) {
@@ -40,5 +49,14 @@ class AdminCustomerController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.users.index')->with('error', 'Error deleting user: ' . $e->getMessage());
         }
+    }
+
+    private function businessId(): ?int
+    {
+        $user = auth()->user();
+        if (!$user || $user->isSuperAdmin()) {
+            return null;
+        }
+        return $user->business_id;
     }
 }

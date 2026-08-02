@@ -20,6 +20,7 @@ class Order extends Model
         'customer_details',
         'payment_method',
         'customer_id',
+        'business_id',
     ];
 
     protected $casts = [
@@ -33,6 +34,11 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
     }
 
     public function package()

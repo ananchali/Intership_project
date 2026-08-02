@@ -9,6 +9,7 @@ class Package extends Model
 {
     
     protected $fillable = [
+        'business_id',
         'name',
         'description',
         'price',
@@ -28,6 +29,11 @@ class Package extends Model
         'features' => 'array',
         'is_active' => 'boolean',
     ];
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
 
     public function orders()
     {

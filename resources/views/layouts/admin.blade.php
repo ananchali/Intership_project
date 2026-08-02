@@ -107,6 +107,17 @@
     </style>
 </head>
 <body class="bg-slate-50">
+    @php
+        $__adminUser = auth()->user();
+        $__businessId = ($__adminUser && $__adminUser->isSuperAdmin()) ? null : ($__adminUser?->business_id ?? null);
+        $__pendingCount = \App\Models\PaymentVerification::where('status', 'pending')
+            ->when($__businessId, fn($q) => $q->where('business_id', $__businessId))
+            ->count();
+        $__notifCount = \App\Models\AdminNotification::unread()
+            ->when($__businessId, fn($q) => $q->where('business_id', $__businessId))
+            ->count();
+        $__isSuperAdmin = $__adminUser && $__adminUser->isSuperAdmin();
+    @endphp
     <!-- Mobile Menu Toggle -->
     <button onclick="toggleSidebar()" class="mobile-menu-toggle">
         <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
@@ -136,6 +147,9 @@
                     </div>
                     <div class="sidebar-header-text">
                         <h2 class="text-xl font-black text-white tracking-tight">Admin CP</h2>
+                        @if($__adminUser?->isBusinessOwner() && $__adminUser->business)
+                            <div class="text-[10px] text-green-400 font-bold uppercase tracking-widest mt-1">{{ $__adminUser->business->name }}</div>
+                        @endif
                         <a href="{{ route('home') }}" class="text-[10px] text-blue-400 font-bold uppercase tracking-widest hover:text-blue-300 flex items-center mt-1 transition-colors">
                             View Site
                         </a>
@@ -145,7 +159,7 @@
                     @include('partials.language_switcher')
                     <a href="{{ route('admin.dashboard') }}" class="relative p-2 rounded-xl hover:bg-white/5 transition-all text-slate-400 hover:text-white" title="Notifications">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                        @php $notifCount = \App\Models\AdminNotification::unread()->count(); @endphp
+                        @php $notifCount = $__notifCount; @endphp
                         @if($notifCount > 0)
                         <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-rose-500 text-white text-[9px] font-black flex items-center justify-center rounded-full">{{ $notifCount > 9 ? '9+' : $notifCount }}</span>
                         @endif
@@ -158,6 +172,16 @@
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
+                @if($__isSuperAdmin)
+                <a href="{{ route('admin.businesses.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.businesses.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <span class="sidebar-text">Businesses</span>
+                    @php $__pendingBiz = \App\Models\Business::where('status', 'pending')->count(); @endphp
+                    @if($__pendingBiz > 0)
+                    <span class="ml-auto bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{{ $__pendingBiz }}</span>
+                    @endif
+                </a>
+                @endif
                 <a href="{{ route('admin.packages.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.packages.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-7 0V4"></path></svg>
                     <span class="sidebar-text">Packages</span>
@@ -169,7 +193,7 @@
                 <a href="{{ route('admin.verifications.pending') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.verifications.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
                     <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="sidebar-text">Verifications</span>
-                    @php $pendingCount = \App\Models\PaymentVerification::where('status', 'pending')->count(); @endphp
+                    @php $pendingCount = $__pendingCount; @endphp
                     @if($pendingCount > 0)
                     <span class="ml-auto bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{{ $pendingCount }}</span>
                     @endif

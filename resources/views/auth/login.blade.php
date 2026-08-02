@@ -138,6 +138,10 @@
                     Don't have an account? 
                     <a href="{{ route('register') }}" class="font-extrabold text-blue-600 hover:text-blue-800 transition-colors">Register</a>
                 </div>
+                <div class="mt-4 text-center text-sm text-gray-600 font-semibold">
+                    Own a business?
+                    <a href="{{ route('vendor.register') }}" class="font-extrabold text-purple-600 hover:text-purple-800 transition-colors">Register your business</a>
+                </div>
             </div>
         </div>
     </div>

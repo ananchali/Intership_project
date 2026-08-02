@@ -10,7 +10,10 @@ class AdminPackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::all();
+        $packages = Package::with('business')
+            ->when($this->businessId(), fn($q) => $q->where('business_id', $this->businessId()))
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('admin.packages.index', compact('packages'));
     }
 
@@ -36,6 +39,7 @@ class AdminPackageController extends Controller
 
         $data['features'] = $this->parseFeatures($data, $data['type'] ?? 'hosting');
         $data['is_active'] = $request->has('is_active');
+        $data['business_id'] = $this->businessId();
         
         Package::create($data);
 
@@ -44,11 +48,14 @@ class AdminPackageController extends Controller
 
     public function edit(Package $package)
     {
+        $this->authorizePackage($package);
         return view('admin.packages.edit', compact('package'));
     }
 
     public function update(Request $request, Package $package)
     {
+        $this->authorizePackage($package);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -106,6 +113,7 @@ class AdminPackageController extends Controller
         
         try {
             $package = Package::findOrFail($id);
+            $this->authorizePackage($package);
             
             // Manually ensure related orders are handled if DB cascade fails
             foreach ($package->orders as $order) {
@@ -122,6 +130,23 @@ class AdminPackageController extends Controller
         } catch (\Exception $e) {
             \Log::error('Package deletion failed for ID ' . $id . ': ' . $e->getMessage());
             return redirect()->route('admin.packages.index')->with('error', 'System Error: ' . $e->getMessage());
+        }
+    }
+
+    private function businessId(): ?int
+    {
+        $user = auth()->user();
+        if (!$user || $user->isSuperAdmin()) {
+            return null;
+        }
+        return $user->business_id;
+    }
+
+    private function authorizePackage(Package $package): void
+    {
+        $businessId = $this->businessId();
+        if ($businessId && $package->business_id !== $businessId) {
+            abort(403);
         }
     }
 }

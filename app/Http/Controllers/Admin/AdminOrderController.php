@@ -10,7 +10,8 @@ class AdminOrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['package', 'payments.verification'])
+        $orders = Order::with(['package', 'payments.verification', 'business'])
+            ->when($this->businessId(), fn($q) => $q->where('business_id', $this->businessId()))
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
@@ -26,6 +27,11 @@ class AdminOrderController extends Controller
 
         try {
             $order = Order::findOrFail($id);
+
+            $businessId = $this->businessId();
+            if ($businessId && $order->business_id !== $businessId) {
+                abort(403);
+            }
             
             // Manually ensure related payments and verifications are handled
             foreach ($order->payments as $payment) {
@@ -40,5 +46,14 @@ class AdminOrderController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.orders.index')->with('error', 'Error deleting order: ' . $e->getMessage());
         }
+    }
+
+    private function businessId(): ?int
+    {
+        $user = auth()->user();
+        if (!$user || $user->isSuperAdmin()) {
+            return null;
+        }
+        return $user->business_id;
     }
 }

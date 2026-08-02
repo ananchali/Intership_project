@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentMethod extends Model
 {
     protected $fillable = [
+        'business_id',
         'name',
         'icon',
         'account_number',
@@ -17,6 +18,11 @@ class PaymentMethod extends Model
         'applicable_providers',
         'applicable_package_ids',
     ];
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
 
     public function getIconUrlAttribute(): string
     {

@@ -64,6 +64,7 @@ class PaymentVerificationController extends Controller
 
         $verification = PaymentVerification::create([
             'order_id'                  => $order->id,
+            'business_id'               => $order->business_id,
             'transaction_reference'     => $request->transaction_number,
             'additional_notes'          => $request->description,
             'bank_slip_path'            => $slipPath,
@@ -81,6 +82,7 @@ class PaymentVerificationController extends Controller
             'title'   => 'New Payment Verification',
             'message' => ($request->account_name ?? 'A customer') . ' submitted a payment verification for order #' . $order->order_number,
             'link'    => route('admin.verifications.pending'),
+            'business_id' => $order->business_id,
         ]);
 
         // Send email notification to admin

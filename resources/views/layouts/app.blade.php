@@ -450,7 +450,7 @@
             </div>
             <div class="btn-auth">
                 <a href="{{ route('admin.login') }}" class="btn-login">Login</a>
-                <a href="{{ route('orders.step1') }}" class="btn-signup">Get Started</a>
+                <a href="{{ route('packages.index') }}" class="btn-signup">Get Started</a>
             </div>
         </div>
     </header>
@@ -475,7 +475,7 @@
                 <a href="{{ route('support') }}" class="block py-3 px-4 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">Support</a>
                 <div class="pt-4 border-t mt-4">
                     <a href="{{ route('admin.login') }}" class="block py-3 px-4 text-center bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors mb-3">Login</a>
-                    <a href="{{ route('orders.step1') }}" class="block py-3 px-4 text-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Get Started</a>
+                    <a href="{{ route('packages.index') }}" class="block py-3 px-4 text-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Get Started</a>
                 </div>
             </nav>
         </div>

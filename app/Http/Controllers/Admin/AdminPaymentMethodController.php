@@ -10,7 +10,10 @@ class AdminPaymentMethodController extends Controller
 {
     public function index()
     {
-        $methods = PaymentMethod::all();
+        $methods = PaymentMethod::with('business')
+            ->when($this->businessId(), fn($q) => $q->where('business_id', $this->businessId()))
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('admin.payment-methods.index', compact('methods'));
     }
 
@@ -43,6 +46,7 @@ class AdminPaymentMethodController extends Controller
         $data['applicable_to'] = $request->has('applicable_to') ? implode(',', $request->applicable_to) : 'all';
         $data['applicable_providers'] = $request->has('applicable_providers') ? implode(',', $request->applicable_providers) : null;
         $data['applicable_package_ids'] = $request->has('applicable_package_ids') ? implode(',', $request->applicable_package_ids) : null;
+        $data['business_id'] = $this->businessId();
 
         if ($request->hasFile('icon')) {
             $data['icon'] = $request->file('icon')->store('payment-icons', 'public');
@@ -55,11 +59,14 @@ class AdminPaymentMethodController extends Controller
 
     public function edit(PaymentMethod $paymentMethod)
     {
+        $this->authorizeMethod($paymentMethod);
         return view('admin.payment-methods.edit', compact('paymentMethod'));
     }
 
     public function update(Request $request, PaymentMethod $paymentMethod)
     {
+        $this->authorizeMethod($paymentMethod);
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'icon' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
@@ -106,10 +113,28 @@ class AdminPaymentMethodController extends Controller
 
         try {
             $paymentMethod = PaymentMethod::findOrFail($id);
+            $this->authorizeMethod($paymentMethod);
             $paymentMethod->delete();
             return redirect()->route('admin.payment-methods.index')->with('success', 'Payment Method deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->route('admin.payment-methods.index')->with('error', 'Error deleting: ' . $e->getMessage());
+        }
+    }
+
+    private function businessId(): ?int
+    {
+        $user = auth()->user();
+        if (!$user || $user->isSuperAdmin()) {
+            return null;
+        }
+        return $user->business_id;
+    }
+
+    private function authorizeMethod(PaymentMethod $paymentMethod): void
+    {
+        $businessId = $this->businessId();
+        if ($businessId && $paymentMethod->business_id !== $businessId) {
+            abort(403);
         }
     }
 }

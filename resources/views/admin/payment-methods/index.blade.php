@@ -47,6 +47,9 @@
             <thead class="bg-white/5">
                 <tr>
                     <th class="px-8 py-5 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Method Name</th>
+                    @if(auth()->user()->isSuperAdmin())
+                    <th class="px-8 py-5 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Business</th>
+                    @endif
                     <th class="px-8 py-5 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Account Information</th>
                     <th class="px-8 py-5 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Applies To</th>
                     <th class="px-8 py-5 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Service Providers</th>
@@ -74,6 +77,13 @@
                             </div>
                         </div>
                     </td>
+                    @if(auth()->user()->isSuperAdmin())
+                    <td class="px-8 py-6 whitespace-nowrap">
+                        <span class="px-2.5 py-1 inline-flex text-[10px] font-black uppercase tracking-wider rounded-lg {{ $method->business ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400' : 'bg-white/5 border border-white/10 text-slate-400' }}">
+                            {{ $method->business?->name ?? 'Platform' }}
+                        </span>
+                    </td>
+                    @endif
                     <td class="px-8 py-6 whitespace-nowrap">
                         <div class="text-sm font-bold text-slate-200 font-mono tracking-wider">{{ $method->account_number }}</div>
                         <div class="text-xs text-slate-400 font-semibold mt-1">{{ $method->account_name }}</div>
