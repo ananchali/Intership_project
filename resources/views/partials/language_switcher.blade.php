@@ -58,19 +58,33 @@
     #lang-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 </style>
 
-<script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,am,om,ti,so,sw,ar,fr,ha,yo,zu',
-            autoDisplay: false
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 <script>
+    // Lazy-load Google Translate only when needed (a saved language is set
+    // or the user opens the dropdown). Loading it synchronously on every
+    // page freezes mobile browsers because it rewraps the whole DOM.
     (function () {
+        var loaded = false;
+
+        function loadTranslate() {
+            if (loaded || typeof google !== 'undefined' && google.translate) return;
+            loaded = true;
+
+            var fn = document.createElement('script');
+            fn.type = 'text/javascript';
+            fn.text = 'function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,am,om,ti,so,sw,ar,fr,ha,yo,zu",autoDisplay:false},"google_translate_element");}';
+            document.body.appendChild(fn);
+
+            var src = document.createElement('script');
+            src.type = 'text/javascript';
+            src.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            document.body.appendChild(src);
+
+            hideTranslateUi();
+            var observer = new MutationObserver(hideTranslateUi);
+            observer.observe(document.body, { childList: true, subtree: true });
+            setTimeout(function () { observer.disconnect(); }, 5000);
+        }
+
         function hideTranslateUi() {
             var banner = document.querySelector('.goog-te-banner-frame, iframe.goog-te-banner-frame');
             if (banner) {
@@ -85,13 +99,17 @@
             document.body.style.top = '0px';
         }
 
-        hideTranslateUi();
-        window.addEventListener('load', function () {
-            setTimeout(hideTranslateUi, 500);
-        });
+        // If the visitor already chose a language, translation must be applied on load.
+        if (document.cookie.indexOf('googtrans=/en/') !== -1) {
+            loadTranslate();
+        }
 
-        var observer = new MutationObserver(hideTranslateUi);
-        observer.observe(document.body, { childList: true, subtree: true });
+        // Load on first dropdown open so picking a language works without a reload.
+        document.addEventListener('click', function (event) {
+            if (event.target && event.target.closest && event.target.closest('#lang-switcher')) {
+                loadTranslate();
+            }
+        });
     })();
 </script>
 
