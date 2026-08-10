@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: afronex-hosting
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: base64:fo+gF1w3PbhtM+AjYoMtZYGghHTPFC9re8eVfJltfds=
+      - key: APP_URL
+        value: https://afronex-hosting.onrender.com
+      - key: DB_CONNECTION
+        value: mongodb
+      - key: MONGODB_DSN
+        value: mongodb+srv://cluster0.ebdiiwz.mongodb.net/?retryWrites=true&w=majority&appName=AfronexHosting
+      - key: MONGODB_DATABASE
+        value: payment_verification
+      - key: MONGODB_USERNAME
+        value: ananchalianan_db_user
+      - key: MONGODB_PASSWORD
+        sync: false
+        value: SET_IN_DASHBOARD_AS_SECRET
+      - key: SESSION_DRIVER
+        value: file
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: MAIL_MAILER
+        value: log

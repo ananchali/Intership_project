@@ -41,6 +41,19 @@ foreach ($storageDirs as $dir) {
 }
 $app->useStoragePath($storagePath);
 
+// config:cache at build time bakes the build machine's absolute paths
+// (/vercel/output/...) into config, which do not exist at runtime on
+// serverless (/var/task/user). Reset the storage-dependent values so
+// views resolve and Blade can recompile into /tmp if needed.
+$app->booted(function () use ($app, $storagePath) {
+    $config = $app['config'];
+
+    $config->set('view.compiled', $storagePath . '/framework/views');
+    $config->set('view.paths', [$app->basePath('resources/views')]);
+    $config->set('cache.stores.file.path', $storagePath . '/framework/cache/data');
+    $config->set('filesystems.disks.local.root', $storagePath . '/app');
+});
+
 // Handle the request
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 

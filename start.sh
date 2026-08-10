@@ -1,17 +1,16 @@
 #!/bin/bash
 
-# Map Render's DATABASE_URL to Laravel's expected DB_URL
-if [ -n "$DATABASE_URL" ]; then
-    export DB_URL="$DATABASE_URL"
-fi
+set -e
 
 # Cache configurations
 php artisan config:cache
-php artisan route:cache
 php artisan view:cache
 
 # Run database migrations
 php artisan migrate --force
+
+# Seed the database (idempotent - skips if data already exists)
+php artisan db:seed --force
 
 # Replace Nginx port if $PORT is defined by Render
 if [ -n "$PORT" ]; then

@@ -8,6 +8,10 @@ class PaymentMethodSeeder extends Seeder
 {
     public function run(): void
     {
+        if (\App\Models\PaymentMethod::count() > 0) {
+            return;
+        }
+
         \App\Models\PaymentMethod::create([
             'name' => 'CBE',
             'account_number' => '1000123456789',

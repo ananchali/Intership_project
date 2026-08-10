@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libsasl2-dev \
+    pkg-config \
     zip \
     unzip \
     nginx \
@@ -16,8 +20,12 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions required by Laravel and PostgreSQL
+# Install PHP extensions required by Laravel
 RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+
+# Install MongoDB extension (required for Laravel MongoDB / Atlas)
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -29,7 +37,7 @@ WORKDIR /var/www
 COPY . .
 
 # Install PHP dependencies
-RUN composer update --no-interaction --prefer-dist --optimize-autoloader --no-dev
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # Copy rest of application (already done above)
 # (no action needed)
