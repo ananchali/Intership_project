@@ -139,3 +139,42 @@ body {
     position: relative;
     z-index: 10;
 }
+
+/* Mobile performance: heavy blur + fixed background stalls phone GPUs */
+@media (max-width: 767px) {
+    body {
+        background-attachment: scroll !important;
+        background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=60&w=800&auto=format&fit=crop') !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    main, .flex-1, #app, [role="main"] {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .max-w-7xl.mx-auto, .container {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    section, .card, .rounded-3xl, .rounded-2xl, .rounded-xl, .rounded-\[2\.5rem\],
+    .bg-white, .bg-gray-50, .bg-slate-50, .bg-blue-50, .bg-emerald-50, .bg-rose-50,
+    .hover\:bg-gray-50:hover, .hover\:bg-slate-50:hover, .hover\:bg-blue-50:hover,
+    .bg-gray-100, .bg-gray-900, .bg-slate-900, .bg-blue-900, .bg-white\/80,
+    .bg-slate-50, .bg-white\/10, .bg-white\/20 {
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+    }
+
+    input, select, textarea {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .gradient-bg, section.relative.text-white, .bg-slate-50.p-10 {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+}
