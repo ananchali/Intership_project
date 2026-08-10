@@ -21,9 +21,6 @@ services:
         value: payment_verification
       - key: MONGODB_USERNAME
         value: ananchalianan_db_user
-      - key: MONGODB_PASSWORD
-        sync: false
-        value: SET_IN_DASHBOARD_AS_SECRET
       - key: SESSION_DRIVER
         value: file
       - key: SESSION_LIFETIME
