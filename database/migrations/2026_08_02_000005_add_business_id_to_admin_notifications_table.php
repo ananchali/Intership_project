@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('admin_notifications', function (Blueprint $table) {
-            $table->unsignedBigInteger('business_id')->nullable()->after('link')->index();
+            $table->unsignedBigInteger('business_id')->nullable()->index();
         });
     }
 

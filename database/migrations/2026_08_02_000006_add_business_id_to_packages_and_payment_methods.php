@@ -8,11 +8,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->unsignedBigInteger('business_id')->nullable()->after('id')->index();
+            $table->unsignedBigInteger('business_id')->nullable()->index();
         });
 
         Schema::table('payment_methods', function (Blueprint $table) {
-            $table->unsignedBigInteger('business_id')->nullable()->after('id')->index();
+            $table->unsignedBigInteger('business_id')->nullable()->index();
         });
     }
 

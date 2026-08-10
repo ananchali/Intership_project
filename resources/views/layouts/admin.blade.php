@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>@yield('title') - Admin Dashboard</title>
     @vite(['resources/css/app.css', 'resources/css/glassmorphism.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -199,7 +200,7 @@
                     @endif
                 </a>
                 <a href="{{ route('admin.payment-methods.index') }}" class="nav-item flex items-center px-5 py-4 rounded-2xl font-bold transition-all group {{ request()->routeIs('admin.payment-methods.*') ? 'sidebar-active' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                    <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 03 3z"></path></svg>
+                    <svg class="h-5 w-5 flex-shrink-0 md:mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                     <span class="sidebar-text">Bank Details</span>
                 </a>
             </nav>

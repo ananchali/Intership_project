@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->string('provider')->nullable()->after('type');
+            $table->string('provider')->nullable();
         });
     }
 

@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->decimal('registration_fee', 10, 2)->nullable()->after('price');
-            $table->decimal('monthly_fee', 10, 2)->nullable()->after('registration_fee');
+            $table->decimal('registration_fee', 10, 2)->nullable();
+            $table->decimal('monthly_fee', 10, 2)->nullable();
         });
     }
 

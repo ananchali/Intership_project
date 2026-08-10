@@ -31,11 +31,27 @@
 
 <style>
     /* Hide the google translate toolbar and elements */
-    .goog-te-banner-frame.skiptranslate { display: none !important; }
-    body { top: 0px !important; }
-    .goog-tooltip { display: none !important; }
-    .goog-tooltip:hover { display: none !important; }
-    .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+    .goog-te-banner-frame.skiptranslate,
+    iframe.goog-te-banner-frame,
+    .skiptranslate > iframe.skiptranslate,
+    body > .skiptranslate {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    body { top: 0px !important; position: static !important; }
+    .goog-tooltip,
+    #goog-gt-tt,
+    #goog-gt-tt:hover {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    .goog-text-highlight {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
     /* Scrollable dropdown */
     #lang-dropdown::-webkit-scrollbar { width: 6px; }
     #lang-dropdown::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
@@ -52,6 +68,32 @@
     }
 </script>
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    (function () {
+        function hideTranslateUi() {
+            var banner = document.querySelector('.goog-te-banner-frame, iframe.goog-te-banner-frame');
+            if (banner) {
+                banner.style.setProperty('display', 'none', 'important');
+                banner.style.setProperty('visibility', 'hidden', 'important');
+            }
+            var tooltip = document.getElementById('goog-gt-tt');
+            if (tooltip) {
+                tooltip.style.setProperty('display', 'none', 'important');
+                tooltip.style.setProperty('visibility', 'hidden', 'important');
+            }
+            document.body.style.top = '0px';
+        }
+
+        hideTranslateUi();
+        window.addEventListener('load', function () {
+            setTimeout(hideTranslateUi, 500);
+        });
+
+        var observer = new MutationObserver(hideTranslateUi);
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+</script>
 
 <script>
     var langNames = langNames || {

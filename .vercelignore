@@ -1,0 +1,15 @@
+.git
+.github
+.idea
+.vscode
+vendor
+node_modules
+database/*.sqlite
+.env
+.env.backup
+.env.production
+.env.vercel
+bootstrap/cache/*.php
+*.log
+composer.phar
+composer-setup.php

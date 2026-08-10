@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payment_methods', function (Blueprint $table) {
-            $table->text('applicable_package_ids')->nullable()->after('applicable_providers');
+            $table->text('applicable_package_ids')->nullable();
         });
     }
 

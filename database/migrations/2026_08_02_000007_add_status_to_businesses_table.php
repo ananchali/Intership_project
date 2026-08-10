@@ -9,7 +9,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('businesses', function (Blueprint $table) {
-            $table->string('status')->default('pending')->after('is_active')->index();
+            $table->string('status')->default('pending')->index();
         });
 
         // Businesses created before this feature (e.g. via super admin) are approved.
