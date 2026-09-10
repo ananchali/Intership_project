@@ -4,15 +4,23 @@ services:
     runtime: docker
     plan: free
     healthCheckPath: /
+    autoDeploy: true
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: APP_NAME
+        value: "Afronex Hosting"
       - key: APP_KEY
-        value: base64:fo+gF1w3PbhtM+AjYoMtZYGghHTPFC9re8eVfJltfds=
+        value: base64:CTx2YVR0VO0qp9nq/qiNHtoSlp9ul1/LkzAXBHCVrZU=
       - key: APP_URL
         value: https://afronex-hosting.onrender.com
+      - key: LOG_CHANNEL
+        value: stderr
+      # "info" keeps OTP codes visible in logs until an SMS provider is configured.
+      - key: LOG_LEVEL
+        value: info
       - key: DB_CONNECTION
         value: mongodb
       - key: MONGODB_DSN
@@ -21,6 +29,11 @@ services:
         value: payment_verification
       - key: MONGODB_USERNAME
         value: ananchalianan_db_user
+      # Secret: set it once in the Render dashboard (Dashboard > Environment).
+      # Create the admin user before filling this in:
+      #   php artisan admin:create --email=you@example.com --name=Admin --password=<strong>
+      - key: MONGODB_PASSWORD
+        sync: false
       - key: SESSION_DRIVER
         value: file
       - key: SESSION_LIFETIME
@@ -29,9 +42,28 @@ services:
         value: file
       - key: QUEUE_CONNECTION
         value: sync
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: FILESYSTEM_DISK
-        value: local
       - key: MAIL_MAILER
         value: log
+      - key: MAIL_FROM_ADDRESS
+        value: support@afronexhosting.com
+      - key: MAIL_FROM_NAME
+        value: "Afronex Hosting"
+      # ── Persistent file storage ─────────────────────────────────────────
+      # Render's FREE plan has ephemeral disks: uploaded bank slips are lost
+      # on every redeploy. To keep uploads, switch to object storage by
+      # uncommenting the lines below and setting FILESYSTEM_DISK to "s3".
+      # Cloudflare R2 (free tier) works with the S3 driver.
+      - key: FILESYSTEM_DISK
+        value: local
+      # - key: AWS_ACCESS_KEY_ID
+      #   sync: false
+      # - key: AWS_SECRET_ACCESS_KEY
+      #   sync: false
+      # - key: AWS_DEFAULT_REGION
+      #   value: auto
+      # - key: AWS_BUCKET
+      #   value: afronex-hosting-uploads
+      # - key: AWS_ENDPOINT
+      #   value: https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+      # - key: AWS_USE_PATH_STYLE_ENDPOINT
+      #   value: "true"

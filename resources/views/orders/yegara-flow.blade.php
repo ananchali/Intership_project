@@ -72,7 +72,7 @@
                             <h4 class="text-lg font-bold text-gray-700 mb-4 pl-3 border-l-4 border-green-500">{{ $provider }}</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 @foreach($providerPackages as $package)
-                                <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-400 transition-colors cursor-pointer flex flex-col" onclick="selectPackage({{ $package->id }}, '{{ $package->type }}')">
+                                <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-400 transition-colors cursor-pointer flex flex-col" onclick="selectPackage('{{ $package->id }}', '{{ $package->type }}')">
                                     <div class="flex justify-between items-start mb-4">
                                         <h3 class="text-lg font-semibold text-gray-900">{{ $package->name }}</h3>
                                         @if($loop->first)
@@ -107,7 +107,7 @@
                                         </ul>
                                     </div>
                                     @endif
-                                    <button onclick="event.stopPropagation(); selectPackage({{ $package->id }}, '{{ $package->type }}')" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-auto">
+                                    <button onclick="event.stopPropagation(); selectPackage('{{ $package->id }}', '{{ $package->type }}')" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-auto">
                                         Select {{ $package->name }}
                                     </button>
                                 </div>
@@ -118,7 +118,7 @@
                     @else
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         @foreach($typePackages as $package)
-                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-400 transition-colors cursor-pointer flex flex-col" onclick="selectPackage({{ $package->id }}, '{{ $package->type }}')">
+                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-400 transition-colors cursor-pointer flex flex-col" onclick="selectPackage('{{ $package->id }}', '{{ $package->type }}')">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-lg font-semibold text-gray-900">{{ $package->name }}</h3>
                                 @if($loop->first)
@@ -144,7 +144,7 @@
                                 @endforeach
                             </ul>
                             @endif
-                            <button onclick="event.stopPropagation(); selectPackage({{ $package->id }}, '{{ $package->type }}')" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-auto">
+                            <button onclick="event.stopPropagation(); selectPackage('{{ $package->id }}', '{{ $package->type }}')" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-auto">
                                 Select {{ $package->name }}
                             </button>
                         </div>
@@ -159,7 +159,8 @@
                         </button>
                     </div>
                 </div>
-                
+                @break
+
             @case(2)
                 @if($isService)
                     <!-- Step 2: Level Selection for Services -->
@@ -329,7 +330,8 @@
                         </form>
                     </div>
                 @endif
-                
+                @break
+
             @case(3)
                 @php $orderData = session('order_data'); @endphp
                 @if(!$orderData || !isset($orderData['package_id']))
@@ -445,7 +447,7 @@
                 @endif
 
             @case(4)
-                @if(request('verified'))
+                @if(request('verified') || session('success'))
                 <div class="text-center py-8">
                     <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,8 +456,8 @@
                     </div>
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">Payment Submitted Successfully!</h2>
                     <p class="text-lg text-gray-600 max-w-lg mx-auto mb-8">
-                        Your payment verification has been submitted and is now under review by our admin team.
-                        You will be notified once your payment is verified.
+                        {{ session('success') ?? 'Your payment verification has been submitted and is now under review by our admin team.
+                        You will be notified once your payment is verified.' }}
                     </p>
                     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto mb-8">
                         <div class="flex items-start gap-3">
@@ -481,6 +483,16 @@
                             Back to Dashboard
                         </a>
                     </div>
+                    @if($errors->any())
+                    <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-6">
+                        <p class="font-semibold mb-1">We could not process your submission:</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                         <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-6 4h2"/>
@@ -642,6 +654,7 @@
                     @endif
                 </div>
                 @endif
+                @break
         @endswitch
     </div>
 </div>

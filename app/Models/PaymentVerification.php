@@ -52,7 +52,7 @@ class PaymentVerification extends Model
 
     public function processedByUser()
     {
-        return $this->belongsTo(User::class, 'processed_by');
+        return $this->belongsTo(\App\Models\Customer::class, 'processed_by');
     }
 
     public function getBankSlipUrlAttribute()
@@ -78,7 +78,7 @@ class PaymentVerification extends Model
     /**
      * Helpers
      */
-    public function approve(?string $notes = null, ?int $processedBy = null): void
+    public function approve(?string $notes = null, mixed $processedBy = null): void
     {
         $this->update([
             'status' => 'approved',
@@ -88,7 +88,7 @@ class PaymentVerification extends Model
         ]);
     }
 
-    public function reject(string $notes, ?int $processedBy = null): void
+    public function reject(string $notes, mixed $processedBy = null): void
     {
         $this->update([
             'status' => 'rejected',

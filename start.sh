@@ -1,8 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -u
 
-# Cache configurations
+echo "Bootstrapping Laravel (env: ${APP_ENV:-production}) at $(date -u +%FT%TZ)"
+
+# Cache configuration and views for production.
+# Routes are NOT cached because this app uses closure-based routes.
 php artisan config:cache
 php artisan view:cache
+
+# Ensure the public/storage symlink exists so uploaded media is served.
+php artisan storage:link >/dev/null 2>&1 || true
 
 # Run database migrations and seed only if the database is reachable,
 # so the web server still boots (and shows a friendly error) when the
@@ -17,6 +24,7 @@ if php -r '
         exit(1);
     }
 '; then
+    echo "MongoDB reachable - running migrations and seeders"
     php artisan migrate --force
     php artisan db:seed --force
 else
@@ -24,12 +32,10 @@ else
 fi
 
 # Replace Nginx port if $PORT is defined by Render
-if [ -n "$PORT" ]; then
-    sed -i "s/listen 80;/listen $PORT;/g" /etc/nginx/sites-available/default
+if [ -n "${PORT:-}" ]; then
+    sed -i "s/listen 80;/listen ${PORT};/g" /etc/nginx/sites-available/default
 fi
 
-# Start PHP-FPM in the background
+# Start PHP-FPM in the background, then Nginx in the foreground
 php-fpm -D
-
-# Start Nginx in the foreground
 nginx -g "daemon off;"

@@ -118,9 +118,22 @@
 </div>
 
 <div class="verify-container">
+    @if(session('success'))
+    <div class="verify-card" style="border-left: 4px solid #10b981; background: #f0fdf4;">
+        <div style="text-align: center; padding: 2rem 0;">
+            <svg style="width: 64px; height: 64px; color: #10b981; margin-bottom: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <h2 style="font-weight: 800; font-size: 1.5rem; color: #065f46; margin-bottom: 1rem;">Payment Verification Submitted!</h2>
+            <p style="color: #047857; font-size: 1rem; line-height: 1.6; max-width: 500px; margin: 0 auto 2rem;">Your payment details have been submitted successfully. Our admin team will review and approve your payment shortly. You will receive a confirmation once it is approved.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ route('customer.dashboard') }}" class="btn btn-primary" style="padding: 1rem 2rem;">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    @else
     <div class="verify-card">
         <form action="{{ route('orders.submit', ['order' => $order->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="order_id" value="{{ $order->id }}">
             
             <div style="text-align: center; margin-bottom: 3rem;">
                 <div class="method-badge">{{ $order->payment_method }}</div>
@@ -128,13 +141,39 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="transaction_reference">Transaction ID / Reference</label>
-                <input type="text" name="transaction_reference" id="transaction_reference" class="form-control" placeholder="Enter your transaction reference number" required>
+                <label class="form-label" for="account_name">Account Holder Name</label>
+                <input type="text" name="account_name" id="account_name" class="form-control" placeholder="Enter the name on the bank account" value="{{ old('account_name') }}" required>
+                @error('account_name') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="payment_date">Date of Payment</label>
-                <input type="date" name="payment_date" id="payment_date" class="form-control" required value="{{ date('Y-m-d') }}">
+                <label class="form-label" for="amount">Payment Amount</label>
+                <input type="number" step="0.01" name="amount" id="amount" class="form-control" placeholder="Enter the amount you paid" value="{{ old('amount', $order->total_amount) }}" required>
+                @error('amount') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bank_name">Bank Name</label>
+                <input type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Enter your bank name" value="{{ old('bank_name') }}">
+                @error('bank_name') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="transaction_number">Transaction ID / Reference</label>
+                <input type="text" name="transaction_number" id="transaction_number" class="form-control" placeholder="Enter your transaction reference number" value="{{ old('transaction_number') }}">
+                @error('transaction_number') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="transaction_date">Date of Payment</label>
+                <input type="date" name="transaction_date" id="transaction_date" class="form-control" value="{{ old('transaction_date', date('Y-m-d')) }}">
+                @error('transaction_date') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="description">Additional Notes</label>
+                <textarea name="description" id="description" class="form-control" rows="3" placeholder="Any additional information about your payment (optional)">{{ old('description') }}</textarea>
+                @error('description') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
@@ -142,9 +181,10 @@
                 <div class="upload-area" onclick="document.getElementById('bank_slip').click()">
                     <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     <div style="font-weight: 700; color: var(--text-main);">Click to upload screenshot</div>
-                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">PNG, JPG up to 10MB</div>
-                    <input type="file" name="bank_slip" id="bank_slip" style="display: none;" accept="image/*">
+                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">PNG, JPG, PDF up to 2MB</div>
+                    <input type="file" name="bank_slip" id="bank_slip" style="display: none;" accept="image/*,.pdf">
                 </div>
+                @error('bank_slip') <span style="color: #ef4444; font-size: 0.85rem;">{{ $message }}</span> @enderror
             </div>
 
             <div style="margin-top: 4rem; display: flex; gap: 1.5rem;">
@@ -155,6 +195,7 @@
             </div>
         </form>
     </div>
+    @endif
 </div>
 
 @endsection

@@ -55,20 +55,50 @@
 @endsection
 
 @section('content')
+@if(session('success'))
+<div class="verify-card" style="border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.1);">
+    <div style="text-align: center; padding: 2rem 0;">
+        <svg style="width: 64px; height: 64px; color: #10b981; margin-bottom: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; margin-bottom: 1rem; color: #065f46;">Payment Verification Submitted!</h2>
+        <p style="color: var(--text-main); font-size: 1rem; line-height: 1.6; max-width: 480px; margin: 0 auto 2rem;">
+            Your payment details have been submitted successfully. Our admin team will review and approve your payment shortly. You will receive a confirmation once it is approved.
+        </p>
+        <div style="text-align: center;">
+            <a href="{{ route('customer.dashboard') }}" class="btn btn-primary" style="padding: 1rem 2rem; text-decoration: none; display: inline-block;">Go to Dashboard</a>
+        </div>
+    </div>
+</div>
+@else
 <div class="verify-card">
     <h2>Payment Verification</h2>
     <p class="text-center" style="margin-bottom:1.5rem; color: var(--text-muted);">
         Please submit your transaction details or upload your bank slip to verify your payment for order #{{ $order->id }}.
     </p>
+
+    @if($errors->any())
+    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
+        <ul style="margin: 0; padding-left: 1.25rem; color: #ef4444; font-size: 0.9rem;">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form action="{{ route('orders.submit', ['order' => $order->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="order_id" value="{{ $order->id }}">
+        <div class="mb-4">
+            <label class="block text-sm font-bold mb-2">Payment Amount</label>
+            <input type="number" step="0.01" name="amount" placeholder="Enter the amount you paid" value="{{ old('amount', $order->total_amount) }}" required>
+        </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2">Bank Name</label>
             <input type="text" name="bank_name" placeholder="e.g. Commercial Bank of Ethiopia" value="{{ old('bank_name') }}">
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2">Account Name (Who paid?)</label>
-            <input type="text" name="account_name" placeholder="Your full name" value="{{ old('account_name') }}">
+            <input type="text" name="account_name" placeholder="Your full name" value="{{ old('account_name') }}" required>
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2">Transaction Reference / Number</label>
@@ -89,5 +119,6 @@
         <button type="submit">Submit Verification</button>
     </form>
 </div>
+@endif
 @endsection
 ?>

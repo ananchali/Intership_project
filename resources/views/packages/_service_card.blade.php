@@ -33,7 +33,7 @@
         </ul>
     </div>
     @endif
-    <button onclick="handlePackageSelection({{ $package->id }})" class="w-full bg-blue-600 text-white text-center py-4 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg mt-auto">
+    <button onclick="handlePackageSelection('{{ $package->id }}')" class="w-full bg-blue-600 text-white text-center py-4 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg mt-auto">
         Select {{ $package->name }}
     </button>
 </div>

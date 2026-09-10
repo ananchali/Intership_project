@@ -137,8 +137,8 @@ Route::prefix('order')->middleware('auth')->name('orders.')->group(function () {
     Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('placeOrder');
     
     Route::get('/{order}/payment', [OrderController::class, 'step4'])->name('step4');
-    Route::get('/{order}/confirm', [PaymentVerificationController::class, 'show'])->name('orders.step5');
-    Route::post('/{order}/confirm', [PaymentVerificationController::class, 'submit'])->name('orders.submit');
+    Route::get('/{order}/confirm', [PaymentVerificationController::class, 'show'])->name('step5');
+    Route::post('/{order}/confirm', [PaymentVerificationController::class, 'submit'])->name('submit');
 });
 
 Route::get('/success', [PaymentVerificationController::class, 'success'])->name('orders.success')->middleware('auth');

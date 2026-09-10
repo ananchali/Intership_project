@@ -36,7 +36,7 @@ class PaymentVerificationController extends Controller
             'amount'             => 'required|numeric|min:0',
             'bank_name'          => 'nullable|string|max:255',
             'account_name'       => 'required|string|max:255',
-            'transaction_number' => 'nullable|string|max:255|unique:payment_verifications,transaction_reference',
+            'transaction_number' => 'nullable|string|max:255',
             'transaction_date'   => 'nullable|date',
             'description'        => 'nullable|string|max:1000',
             'bank_slip'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -55,6 +55,27 @@ class PaymentVerificationController extends Controller
 
         if (empty($request->transaction_number) && !$request->hasFile('bank_slip')) {
             return back()->withErrors(['transaction_number' => 'Either a transaction reference number or a bank slip must be provided.'])->withInput();
+        }
+
+        // If the customer already submitted a payment verification for this order,
+        // treat it as a repeat submission rather than a unique-constraint failure.
+        if ($request->transaction_number) {
+            $existingForOrder = PaymentVerification::where('order_id', $order->id)
+                ->where('transaction_reference', $request->transaction_number)
+                ->first();
+
+            if ($existingForOrder) {
+                return $this->redirectAfterVerification($order, $request, 'A payment verification with this transaction reference has already been submitted for this order and is awaiting admin review.');
+            }
+
+            // Block reuse of a transaction reference that belongs to a different order.
+            $usedByAnotherOrder = PaymentVerification::where('order_id', '!=', $order->id)
+                ->where('transaction_reference', $request->transaction_number)
+                ->exists();
+
+            if ($usedByAnotherOrder) {
+                return back()->withErrors(['transaction_number' => 'This transaction reference has already been used for a different order. Please check your reference number.'])->withInput();
+            }
         }
 
         $slipPath = null;
@@ -89,15 +110,33 @@ class PaymentVerificationController extends Controller
         try {
             $adminEmail = config('mail.admin_address', 'support@afronexhosting.com');
             Mail::to($adminEmail)->send(new NewPaymentVerification($verification));
+
+            $shopOwnerEmail = $order->business?->owner_email
+                ?? $order->business?->owner()?->first()?->email;
+            if ($shopOwnerEmail && $shopOwnerEmail !== $adminEmail) {
+                Mail::to($shopOwnerEmail)->send(new NewPaymentVerification($verification));
+            }
         } catch (\Exception $e) {
             \Log::warning('Failed to send admin notification email: ' . $e->getMessage());
         }
 
         $redirect = $request->input('_from_yegara')
             ? redirect()->route('orders.yegara-flow', ['step' => 4, 'order_id' => $order->id, 'verified' => 1])
-            : redirect()->route('orders.success');
+            : redirect()->route('orders.step5', ['order' => $order->id]);
 
-        return $redirect->with('success', 'Your payment verification has been submitted successfully and is now under review by our admin team.');
+        return $redirect->with('success', 'Your payment verification has been submitted successfully. Our admin team will review and approve your payment shortly.');
+    }
+
+    /**
+     * Send the customer to the appropriate "payment pending review" screen.
+     */
+    private function redirectAfterVerification(Order $order, Request $request, string $message)
+    {
+        $redirect = $request->input('_from_yegara')
+            ? redirect()->route('orders.yegara-flow', ['step' => 4, 'order_id' => $order->id, 'verified' => 1])
+            : redirect()->route('orders.step5', ['order' => $order->id]);
+
+        return $redirect->with('success', $message . ' If approved, your account will be activated. If rejected, you will be notified.');
     }
 
     /**

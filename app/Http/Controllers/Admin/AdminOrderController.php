@@ -48,7 +48,7 @@ class AdminOrderController extends Controller
         }
     }
 
-    private function businessId(): ?int
+    private function businessId(): ?string
     {
         $user = auth()->user();
         if (!$user || $user->isSuperAdmin()) {

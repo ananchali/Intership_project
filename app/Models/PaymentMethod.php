@@ -33,7 +33,7 @@ class PaymentMethod extends Model
         'is_active' => 'boolean',
     ];
 
-    public function scopeForType($query, string $type, ?string $provider = null, ?int $packageId = null)
+    public function scopeForType($query, string $type, ?string $provider = null, ?string $packageId = null)
     {
         return $query->where(function ($q) use ($type, $provider) {
             $q->where('applicable_to', 'all')

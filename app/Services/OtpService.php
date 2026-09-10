@@ -51,5 +51,8 @@ class OtpService
     {
         // Log OTP to file (SMS integration placeholder)
         Log::channel('otp')->info("OTP for {$phone}: {$otp}");
+        // Also emit on the default channel so the code appears in the
+        // deployment log (e.g. Render) until a real SMS provider is wired in.
+        Log::info("OTP for {$phone}: {$otp}");
     }
 }

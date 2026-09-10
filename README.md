@@ -1,218 +1,132 @@
-# Payment Verification System
+# Afronex Hosting — Payment Verification System
 
-A Laravel-based payment verification system similar to Yegara hosting, built with MongoDB for data storage.
+A Laravel (PHP 8.4) hosting/payment platform for Ethiopian businesses. Customers order
+hosting/domain/services packages, pay via bank transfer, and upload payment slips for
+admin verification. Data is stored in **MongoDB** (MongoDB Atlas in production).
 
-## Features
+## Stack
 
-- **Package Management**: Offer hosting and domain packages
-- **Order Placement**: Customers can place orders with domain registration/transfer options
-- **Payment Verification**: Bank slip upload and transaction reference verification
-- **Admin Dashboard**: Review and approve/reject payment verifications
-- **Email Notifications**: Automated notifications for order confirmation and payment status
-- **Multi-bank Support**: Support for multiple Ethiopian banks
+- **Backend**: Laravel 13, PHP ^8.3
+- **Database**: MongoDB via `mongodb/laravel-mongodb`
+- **Frontend**: Blade + Tailwind CSS 4 + Vite 8
+- **Auth**: Laravel Sanctum + phone OTP (2FA)
+- **Deploy**: Docker on Render (see `render.yaml` / `Dockerfile`)
 
-## Technology Stack
+## Local development
 
-- **Backend**: Laravel 10+
-- **Database**: MongoDB
-- **Frontend**: Blade Templates + Tailwind CSS
-- **File Storage**: Laravel File Storage
-- **Authentication**: Laravel Sanctum
+Requirements: PHP 8.3+ (with `mongodb` extension), Composer, Node 20.19+/22.12+, a running MongoDB.
 
-## Installation
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+# set MONGODB_DSN / MONGODB_DATABASE in .env
 
-### Prerequisites
-
-- PHP 8.1+
-- MongoDB
-- Composer
-- Node.js (for frontend assets)
-
-### Setup Steps
-
-1. **Clone repository**
-   ```bash
-   git clone <repository-url>
-   cd payment-verification-system
-   ```
-
-2. **Install dependencies**
-   ```bash
-   composer install
-   npm install
-   ```
-
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-4. **Configure MongoDB**
-   Update your `.env` file with MongoDB settings:
-   ```env
-   DB_CONNECTION=mongodb
-   MONGODB_DSN=mongodb://127.0.0.1:27017
-   MONGODB_DATABASE=payment_verification
-   # MONGODB_USERNAME=your_username
-   # MONGODB_PASSWORD=your_password
-   ```
-
-5. **Create storage link**
-   ```bash
-   php artisan storage:link
-   ```
-
-6. **Seed database**
-   ```bash
-   php artisan db:seed
-   ```
-
-7. **Start development server**
-   ```bash
-   php artisan serve
-   ```
-
-## Usage
-
-### Customer Flow
-
-1. **Browse Packages**: Visit homepage to view available hosting and domain packages
-2. **Place Order**: Select a package and provide domain and customer information
-3. **Make Payment**: Deposit to bank account using provided details
-4. **Submit Verification**: Upload bank slip and enter transaction details
-5. **Wait for Approval**: Admin will review and verify payment
-
-### Admin Flow
-
-1. **Access Dashboard**: Navigate to `/admin/dashboard`
-2. **Review Pending Verifications**: Check `/admin/verifications/pending`
-3. **Verify Payments**: Review bank slips and transaction details
-4. **Approve/Reject**: Approve valid payments or reject with reasons
-
-## Key Routes
-
-### Public Routes
-- `/` - Homepage (package listing)
-- `/packages` - Package listing
-- `/packages/{package}/order` - Order form
-- `/orders/{order}` - Order details
-- `/payments/create/{order}` - Payment verification form
-
-### Admin Routes
-- `/admin/dashboard` - Admin dashboard
-- `/admin/verifications/pending` - Pending verifications
-- `/admin/verifications/{verification}` - Review verification
-
-## Database Schema
-
-### Collections
-
-#### packages
-- Package information (hosting/domain)
-- Pricing and features
-- Active status
-
-#### orders
-- Customer orders
-- Package and domain details
-- Order status tracking
-
-#### payments
-- Payment information
-- Transaction details
-- Verification status
-
-#### payment_verifications
-- Bank slip uploads
-- Verification details
-- Admin notes and status
-
-#### customers
-- Customer accounts
-- Contact information
-
-## File Structure
-
-```
-payment-verification-system/
-├── app/
-│   ├── Models/              # MongoDB models
-│   ├── Http/Controllers/     # Web controllers
-│   └── Services/            # Business logic services
-├── resources/views/         # Blade templates
-├── database/seeders/        # Database seeders
-├── public/storage/          # File uploads
-└── routes/                 # Route definitions
+php artisan migrate --force
+php artisan db:seed --force
+npm run build          # or: npm run dev for hot reload
+php artisan serve
 ```
 
-## Configuration
+Create the admin account:
 
-### MongoDB Setup
-
-1. Install MongoDB on your system
-2. Create a database for the application
-3. Update `.env` with connection details
-
-### File Upload Configuration
-
-Bank slips are stored in `storage/app/public/bank_slips/` and accessible via `public/storage/bank_slips/`.
-
-### Email Configuration
-
-Configure email settings in `.env` to enable email notifications:
-
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=your-mail-server
-MAIL_PORT=587
-MAIL_USERNAME=your-email
-MAIL_PASSWORD=your-password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@yourdomain.com
-MAIL_FROM_NAME="${APP_NAME}"
+```bash
+php artisan admin:create --email=you@example.com --name="Admin" --password='<12+ char password>'
 ```
 
-## Security Considerations
+## Deploy to Render (production)
 
-- File upload validation (type, size limits)
-- Input sanitization and validation
-- CSRF protection on all forms
-- Proper authentication and authorization
-- Secure file storage and access
+This repo ships a Render Blueprint (`render.yaml`) plus a `Dockerfile`. Two ways to deploy:
 
-## Development
+### Option A — Blueprint (recommended)
 
-### Adding New Packages
+1. Push this repository to GitHub.
+2. In the Render dashboard go to **New + → Blueprint** and select the repo.
+3. Render reads `render.yaml`, creates the service, and builds the Docker image automatically.
 
-Use PackageSeeder to add new packages:
+### Option B — Docker Web Service
 
-```php
-Package::create([
-    'name' => 'New Package',
-    'description' => 'Package description',
-    'price' => 1000,
-    'currency' => 'ETB',
-    'type' => 'hosting|domain',
-    'features' => ['Feature 1', 'Feature 2'],
-    'is_active' => true,
-]);
+1. **New + → Web Service** → connect the GitHub repo.
+2. **Runtime: Docker** (the `Dockerfile` is picked up automatically).
+3. Add the environment variables from `render.yaml` (below) and set **Health Check Path** to `/`.
+
+### Required environment variables
+
+| Variable           | Value                                                                 |
+|--------------------|-----------------------------------------------------------------------|
+| `APP_ENV`          | `production`                                                          |
+| `APP_DEBUG`        | `false`                                                               |
+| `APP_KEY`          | a `base64:` key (one is already set in `render.yaml`)                 |
+| `APP_URL`          | `https://<your-service>.onrender.com`                                 |
+| `DB_CONNECTION`    | `mongodb`                                                             |
+| `MONGODB_DSN`      | your Atlas SRV string (already in `render.yaml`)                      |
+| `MONGODB_DATABASE` | e.g. `payment_verification`                                           |
+| `MONGODB_USERNAME` | Atlas database user                                                   |
+| `MONGODB_PASSWORD` | **Secret — set in Render Dashboard → Environment** (`sync: false`)    |
+| `SESSION_DRIVER`   | `file`    (or `database`)                                             |
+| `CACHE_STORE`      | `file`    (or `database`)                                             |
+| `QUEUE_CONNECTION` | `sync`                                                                |
+| `LOG_CHANNEL`      | `stderr`                                                              |
+| `MAIL_MAILER`      | `log` (later: SMTP / Mailgun)                                          |
+
+> `MONGODB_PASSWORD` is declared as `sync: false` in `render.yaml`, so it is **not**
+> stored in code — after the first deploy, open **Dashboard → Environment** and set it
+> once. The container boots even if the DB is unreachable (it shows a friendly error
+> and retries migrations on the next boot).
+
+### Create the admin after deploying
+
+Open the Render **Shell** for your service and run:
+
+```bash
+php artisan admin:create --email=you@example.com --name=Admin --password='<12+ char password>'
+# optional: --phone=0911...   (a phone triggers OTP on login)
 ```
 
-### Customizing Notifications
+Log in at `/admin/login` (select Admin role on the login page).
 
-Modify `NotificationService` to customize email templates and sending logic.
+### File uploads (bank slips) — important
+
+Render's **free plan uses an ephemeral disk**: uploads stored locally are deleted on
+every redeploy/restart. To persist them, use object storage. The app already ships the
+S3 driver (Cloudflare R2 free tier works). In Render:
+
+- set `FILESYSTEM_DISK=s3`, and
+- set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (secrets), `AWS_DEFAULT_REGION=auto`,
+  `AWS_BUCKET`, `AWS_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com`,
+  `AWS_USE_PATH_STYLE_ENDPOINT=true`
+
+### Phone OTP (2FA) — caveat
+
+OTPs are currently **logged, not sent by SMS** (`app/Services/OtpService.php`).
+With `LOG_CHANNEL=stderr` the codes appear in the Render logs (default channel), so
+users/admins can retrieve them — but this is *not* secure for real production traffic.
+Wire a real SMS provider (Twilio, Africa's Talking, …) before scaling up.
+
+## Project layout
+
+```
+app/Console/Commands     artisan commands (admin:create, ...)
+app/Http/Controllers     web + admin controllers
+app/Http/Middleware      EnsureAdmin, EnsureSuperAdmin, SetLocale
+app/Models               MongoDB models (Customer, Order, Package, ...)
+app/Services             OtpService, notification services
+database/migrations      MongoDB-compatible migrations
+database/seeders         packages + payment methods
+resources/views          Blade templates
+routes/web.php           all routes
+```
 
 ## Testing
 
-The system includes sample data seeding for testing purposes. Run:
+The suite uses MongoDB models, so it requires a **replica set** (MongoDB Atlas or a local
+`mongod --replSet`). Configure a test database in `phpunit.xml` then:
 
 ```bash
-php artisan db:seed
+php artisan test
 ```
-
-This will create sample packages and test data.
 
 ## License
 
-This project is open-source and available under MIT License.
+MIT.

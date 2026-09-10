@@ -223,13 +223,13 @@ class AdminController extends Controller
         return response()->json(['success' => true]);
     }
 
-    private function businessId(): ?int
+    private function businessId(): ?string
     {
         $user = auth()->user();
         if (!$user || $user->isSuperAdmin()) {
             return null;
         }
-        return $user->business_id;
+        return $user->business_id ?: null;
     }
 
     private function authorizeVerification(PaymentVerification $verification): void

@@ -145,54 +145,22 @@ class AuthController extends Controller
 
             $role = $request->input('role', 'customer');
 
-            // If trying to log in as admin, enforce admin email check
-            if ($role === 'admin' && $credentials['email'] !== 'ananchali36@gmail.com') {
-                return back()->withErrors([
-                    'email' => 'The administrative email address provided is incorrect.',
-                ])->withInput();
-            }
-
-            // Admin hardcoded bypass (no OTP for admin)
-            if ($credentials['email'] === 'ananchali36@gmail.com' && $credentials['password'] === '12345qwer') {
-                $admin = Customer::firstOrCreate(
-                    ['email' => 'ananchali36@gmail.com'],
-                    [
-                        'name' => 'Admin User',
-                        'phone' => '+251911234567',
-                        'password_hash' => Hash::make('12345qwer'),
-                        'is_active' => true,
-                        'role' => Customer::ROLE_SUPER_ADMIN,
-                    ]
-                );
-
-                if (!Hash::check('12345qwer', $admin->password_hash)) {
-                    $admin->update(['password_hash' => Hash::make('12345qwer')]);
-                }
-
-                if (!$admin->isSuperAdmin()) {
-                    $admin->update(['role' => Customer::ROLE_SUPER_ADMIN]);
-                }
-
-                Auth::login($admin);
-                $request->session()->regenerate();
-
-                return redirect()->route('admin.dashboard');
-            }
-
-            // Enforce that customers cannot log in through admin role
-            if ($role === 'admin') {
-                return back()->withErrors([
-                    'email' => 'Invalid admin credentials.',
-                ])->withInput();
-            }
-
             // Find the user by email
             $customer = Customer::where('email', $credentials['email'])->first();
 
             if (!$customer || !Hash::check($credentials['password'], $customer->password_hash)) {
+                $error = $role === 'admin'
+                    ? 'Invalid admin credentials.'
+                    : 'The provided credentials do not match our records.';
+
+                return back()->withErrors(['email' => $error])->withInput();
+            }
+
+            // Users who try to sign in through the admin login must actually be admins.
+            if ($role === 'admin' && !$customer->isAdmin()) {
                 return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ]);
+                    'email' => 'Invalid admin credentials.',
+                ])->withInput();
             }
 
             // Send OTP for phone verification
@@ -215,50 +183,55 @@ class AuthController extends Controller
             return $this->redirectForRole($customer);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'type' => get_class($e),
-                'file' => basename($e->getFile()),
-                'line' => $e->getLine(),
-            ], 500);
+            // Never leak internal details to the client in production.
+            if (!app()->environment('production')) {
+                return response()->json([
+                    'error' => true,
+                    'message' => $e->getMessage(),
+                    'type' => get_class($e),
+                    'file' => basename($e->getFile()),
+                    'line' => $e->getLine(),
+                ], 500);
+            }
+
+            throw $e;
         }
     }
 
-    public function adminLogin(Request $request)
+    public function adminLogin(Request $request, OtpService $otpService)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Check for admin credentials
-        if ($request->email === 'ananchali36@gmail.com' && $request->password === '12345qwer') {
-            // Create or find admin user
-            $admin = Customer::firstOrCreate(
-                ['email' => 'ananchali36@gmail.com'],
-                [
-                    'name' => 'Admin User',
-                    'phone' => '+251911234567',
-                    'password_hash' => Hash::make('12345qwer'),
-                    'is_active' => true,
-                    'role' => Customer::ROLE_SUPER_ADMIN,
-                ]
-            );
+        // Find the account and verify its credentials against the database.
+        $customer = Customer::where('email', $credentials['email'])->first();
 
-            if (!$admin->isSuperAdmin()) {
-                $admin->update(['role' => Customer::ROLE_SUPER_ADMIN]);
-            }
-
-            Auth::login($admin);
-            $request->session()->regenerate();
-            
-            return redirect()->route('admin.dashboard');
+        if (!$customer || !$customer->isAdmin() || !Hash::check($credentials['password'], $customer->password_hash)) {
+            return back()->withErrors([
+                'email' => 'Invalid admin credentials.',
+            ]);
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid admin credentials.',
-        ]);
+        // Send OTP for phone verification
+        if ($customer->phone) {
+            $verification = $otpService->generate($customer->phone);
+            session()->put('login_otp_customer_id', $customer->id);
+            session()->put('login_otp_phone', $customer->phone);
+
+            if (app()->environment('local')) {
+                session()->flash('debug_otp', $verification->otp);
+            }
+
+            return redirect()->route('login.otp');
+        }
+
+        // No phone on record — log in directly
+        Auth::login($customer);
+        $request->session()->regenerate();
+
+        return redirect()->route('admin.dashboard');
     }
 
     public function ajaxRegister(Request $request)
