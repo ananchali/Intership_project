@@ -41,7 +41,7 @@
                 @if($notif->link)
                 <a href="{{ $notif->link }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 whitespace-nowrap">View</a>
                 @endif
-                <button onclick="dismissNotif({{ $notif->id }})" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                <button onclick="dismissNotif('{{ $notif->id }}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
